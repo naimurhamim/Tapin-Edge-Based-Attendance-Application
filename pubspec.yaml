@@ -1,0 +1,43 @@
+name: tapin_attendance
+description: "TapIn - Smart Attendance System"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Supabase
+  supabase_flutter: ^2.8.4
+
+  # Storage
+  shared_preferences: ^2.3.3
+
+  # PDF
+  pdf: ^3.11.1
+  printing: ^5.13.1
+
+  # Utils
+  intl: ^0.19.0
+  uuid: ^4.5.1
+
+  # Icons
+  cupertino_icons: ^1.0.8
+  supabase: ^2.16.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.13.1
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon.png"
+
+flutter:
+  uses-material-design: true

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TapIn — Smart Attendance System</title>
+  <meta name="description"
+    content="TapIn is a full-stack IoT and Flutter ecosystem for seamless university attendance management.">
+  <link rel="icon" href="assets/icons/icon.png" type="image/png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <div class="bg-grid"></div>
+
+  <!-- ======================================================
+       SLIDE 1 — HERO
+       ====================================================== -->
+  <section id="slide-1" class="slide">
+    <div class="container slide-two-col">
+      <div class="hero-info-card gsap-fade">
+        <div class="univ-header">
+          <img src="assets/icons/universityLogo.png" alt="UFTB Logo" class="univ-logo">
+          <span class="univ-name">UNIVERSITY OF FRONTIER TECHNOLOGY, BANGLADESH</span>
+        </div>
+        <p class="meta-line"><strong>Course Code and Name:</strong> IRE 460, Mobile Platform for IoT Devices Sessional
+        </p>
+        <div class="submitters-row">
+          <div>
+            <p class="meta-label">Submitted by:</p>
+            <p class="meta-val">MD Naimur Rashid (2101042)<br>Sourav Chakraborty (2101031)</p>
+          </div>
+          <div>
+            <p class="meta-label">Submitted to:</p>
+            <p class="meta-val">Md. Rafiqul Islam<br>Lecturer, IRE</p>
+          </div>
+        </div>
+        <div class="fingerprint-wrap">
+          <svg class="fingerprint-svg" viewBox="0 0 120 120" fill="none">
+            <path d="M60 10 C35 10 15 30 15 55 C15 80 35 100 60 100" stroke="#2563EB" stroke-width="4"
+              stroke-linecap="round" fill="none" />
+            <path d="M60 20 C40 20 25 35 25 55 C25 75 40 90 60 90" stroke="#2563EB" stroke-width="3.5"
+              stroke-linecap="round" fill="none" />
+            <path d="M60 30 C45 30 35 41 35 55 C35 69 45 80 60 80" stroke="#2563EB" stroke-width="3"
+              stroke-linecap="round" fill="none" />
+            <path d="M60 40 C50 40 45 47 45 55 C45 63 50 70 60 70" stroke="#2563EB" stroke-width="2.5"
+              stroke-linecap="round" fill="none" />
+            <path d="M60 50 C56 50 53 52 53 55 C53 58 56 60 60 60" stroke="#2563EB" stroke-width="2"
+              stroke-linecap="round" fill="none" />
+            <path d="M60 10 C85 10 105 30 105 55 C105 80 85 100 60 100" stroke="#06B6D4" stroke-width="4"
+              stroke-linecap="round" fill="none" />
+            <path d="M60 20 C80 20 95 35 95 55 C95 75 80 90 60 90" stroke="#06B6D4" stroke-width="3.5"
+              stroke-linecap="round" fill="none" />
+            <path d="M60 30 C75 30 85 41 85 55 C85 69 75 80 60 80" stroke="#06B6D4" stroke-width="3"
+              stroke-linecap="round" fill="none" />
+            <path d="M60 40 C70 40 75 47 75 55 C75 63 70 70 60 70" stroke="#06B6D4" stroke-width="2.5"
+              stroke-linecap="round" fill="none" />
+          </svg>
+        </div>
+        <h1 class="hero-title"><span class="blue-text">TapIn</span> — Smart Attendance System</h1>
+        <p class="hero-subtitle">A full-stack IoT and Flutter ecosystem for seamless university attendance.</p>
+      </div>
+      <div class="hero-phone-wrap gsap-fade">
+        <div class="phone-mockup phone-iso">
+          <div class="phone-notch"></div>
+          <div class="phone-screen">
+            <img src="assets/screenshots/student-dashboard.jpg" alt="Student Dashboard">
+          </div>
+          <div class="phone-bar"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       SLIDE 2 — MACRO ECOSYSTEM
+       ====================================================== -->
+  <section id="slide-2" class="slide">
+    <div class="container">
+      <p class="slide-label">System Architecture</p>
+      <h2 class="slide-title gsap-fade">Macro <span>Ecosystem</span> Workflow</h2>
+      <div class="s2-flow">
+        <div class="s2-node">
+          <div class="sticky sticky-xl yellow s2-sticky gsap-sticky">
+            <div class="s2-icon"><i data-lucide="radio" style="width:36px;height:36px;"></i></div>
+            <strong>IoT Hardware</strong><br><br>
+            NodeMCU ESP8266<br>+ RC522 RFID Reader<br><br>
+            Scans 13.56 MHz physical<br>cards. Sends HTTP POST<br>to Supabase.
+          </div>
+        </div>
+        <div class="s2-arrow gsap-fade">
+          <svg viewBox="0 0 80 40" fill="none" width="80">
+            <path d="M5 20 C25 20 55 20 68 20" stroke="#2563EB" stroke-width="2.5" stroke-dasharray="6 3"
+              stroke-linecap="round" />
+            <path d="M62 13 L75 20 L62 27" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </div>
+        <div class="s2-node">
+          <div class="sticky sticky-xl blue s2-sticky gsap-sticky">
+            <div class="s2-icon"><i data-lucide="cloud" style="width:36px;height:36px;"></i></div>
+            <strong>Backend Cloud</strong><br><br>
+            Supabase Postgres<br>+ Edge Functions<br><br>
+            Validates user, checks<br>schedule, inserts<br>attendance records.
+          </div>
+        </div>
+        <div class="s2-arrow gsap-fade">
+          <svg viewBox="0 0 80 40" fill="none" width="80">
+            <path d="M5 20 C25 20 55 20 68 20" stroke="#2563EB" stroke-width="2.5" stroke-dasharray="6 3"
+              stroke-linecap="round" />
+            <path d="M62 13 L75 20 L62 27" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </div>
+        <div class="s2-node">
+          <div class="sticky sticky-xl green s2-sticky gsap-sticky">
+            <div class="s2-icon"><i data-lucide="smartphone" style="width:36px;height:36px;"></i></div>
+            <strong>Client Application</strong><br><br>
+            Flutter cross-platform<br>mobile app.<br><br>
+            Real-time UI for Students<br>&amp; Admins via<br>Supabase streams.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       SLIDE 3 — HARDWARE NODE
+       ====================================================== -->
+  <section id="slide-3" class="slide">
+    <div class="container">
+      <p class="slide-label">IoT Layer Deep-Dive</p>
+      <h2 class="slide-title gsap-fade">Hardware Node: <span>Internal Logic</span></h2>
+      <div class="s3-layout">
+
+        <!-- Column 1: Circuit Diagram -->
+        <div class="s3-img-wrap gsap-fade">
+          <img src="assets/CircuitDiagramDemoImage.png" alt="NodeMCU + RC522 Circuit Diagram" class="s3-circuit-img">
+        </div>
+
+        <!-- Column 2: All Sticky Notes -->
+        <div class="s3-notes">
+          <!-- Pin connection table -->
+          <div class="sticky yellow sticky-table gsap-sticky" style="transform: rotate(-1.2deg);">
+            <div class="pin-table-title"><i data-lucide="pin" class="inline-icon"></i> RC522 → NodeMCU Pins</div>
+            <table class="pin-table">
+              <thead>
+                <tr>
+                  <th>RC522</th>
+                  <th>GPIO</th>
+                  <th>Board</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>SDA (SS)</td>
+                  <td>GPIO 15</td>
+                  <td>D8</td>
+                </tr>
+                <tr>
+                  <td>RST</td>
+                  <td>GPIO 0</td>
+                  <td>D3</td>
+                </tr>
+                <tr>
+                  <td>MOSI</td>
+                  <td>GPIO 13</td>
+                  <td>D7</td>
+                </tr>
+                <tr>
+                  <td>MISO</td>
+                  <td>GPIO 12</td>
+                  <td>D6</td>
+                </tr>
+                <tr>
+                  <td>SCK</td>
+                  <td>GPIO 14</td>
+                  <td>D5</td>
+                </tr>
+                <tr>
+                  <td>GND</td>
+                  <td>GND</td>
+                  <td>GND</td>
+                </tr>
+                <tr>
+                  <td>3.3V</td>
+                  <td>3.3V</td>
+                  <td>3V3</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Explanatory sticky notes clustered horizontally -->
+          <div class="s3-notes-cluster">
+            <div class="sticky pink gsap-sticky">
+              Reads <strong>13.56 MHz RFID card UID</strong><br>
+              e.g., <strong>EBACC836</strong><br>
+              via SPI protocol.
+            </div>
+            <div class="sticky blue gsap-sticky">
+              <strong>3-Second Cooldown!</strong><br>
+              Prevents double-tap entries on the<br>
+              same card.
+            </div>
+            <div class="sticky green gsap-sticky">
+              Sends <strong>HTTP POST</strong> to Supabase Edge<br>Function with the<br>scanned UID.
+            </div>
+          </div>
+        </div>
+
+        <!-- Column 3: Internal Logic (Handwritten Flow) -->
+        <div class="s3-flow-wrap gsap-fade">
+          <div class="sticky yellow gsap-sticky"
+            style="transform: rotate(1.5deg); max-width: 330px; width: 330px; height: 330px; padding: 20px;">
+            <div class="flow-container">
+              <svg class="flow-arrows" viewBox="0 0 290 290">
+                <defs>
+                  <marker id="hw-arrow-blue" markerWidth="10" markerHeight="10" refX="8" refY="5"
+                    orient="auto-start-reverse">
+                    <path d="M 2 2 L 8 5 L 2 8" fill="none" stroke="#1d4ed8" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                  </marker>
+                  <marker id="hw-arrow-red" markerWidth="10" markerHeight="10" refX="8" refY="5"
+                    orient="auto-start-reverse">
+                    <path d="M 2 2 L 8 5 L 2 8" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round"
+                      stroke-linejoin="round" />
+                  </marker>
+                </defs>
+                <!-- Top -> Right -->
+                <path d="M 195 30 Q 250 35 250 100" fill="none" stroke="#1d4ed8" stroke-width="2"
+                  marker-end="url(#hw-arrow-blue)" />
+                <!-- Right -> Bottom -->
+                <path d="M 230 180 Q 250 250 190 250" fill="none" stroke="#1d4ed8" stroke-width="2"
+                  marker-end="url(#hw-arrow-blue)" />
+                <!-- Bottom -> Left -->
+                <path d="M 90 250 Q 20 250 30 170" fill="none" stroke="#1d4ed8" stroke-width="2"
+                  marker-end="url(#hw-arrow-blue)" />
+                <!-- Left -> Top -->
+                <path d="M 40 100 Q 40 30 95 30" fill="none" stroke="#1d4ed8" stroke-width="2"
+                  marker-end="url(#hw-arrow-blue)" />
+
+                <!-- Red curved arrow from cooldown to tooltip -->
+                <path d="M 75 140 Q 75 130 110 115" fill="none" stroke="#dc2626" stroke-width="2"
+                  marker-end="url(#hw-arrow-red)" />
+              </svg>
+
+              <div class="flow-step hw-step-top">Wait for Card</div>
+              <div class="flow-step hw-step-right">Read 13.56 MHz UID<br>(e.g., EBACC836)</div>
+              <div class="flow-step hw-step-bottom">HTTP POST<br>to Supabase</div>
+              <div class="flow-step hw-step-left">3-Second<br>Cooldown</div>
+
+              <div class="hw-tooltip-red">Prevents<br>double-tapping</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       SLIDE 4 — BACKEND CLOUD
+       ====================================================== -->
+  <section id="slide-4" class="slide">
+    <div class="container">
+      <p class="slide-label">Backend Layer</p>
+      <h2 class="slide-title gsap-fade">Backend Cloud: <span>Database & Logic</span></h2>
+      <div class="s4-layout">
+        <!-- DB Diagram Handwritten -->
+        <div class="s4-hw-diagram-wrap gsap-fade">
+          <div class="sticky blue gsap-sticky" style="transform: rotate(-1deg); max-width: 540px; width: 100%; height: 380px; padding: 20px;">
+            <div style="font-family: 'Caveat', cursive; font-size: 1.6rem; font-weight: 700; text-align: center; margin-bottom: 12px; border-bottom: 2px dashed rgba(0,0,0,0.15); padding-bottom: 6px; color: #01243A;">
+              <i data-lucide="database" class="inline-icon"></i> Database Schema
+            </div>
+
+            <div class="db-flow-container">
+              <svg class="db-arrows" viewBox="0 0 500 320">
+                 <defs>
+                    <marker id="hw-arrow-db" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+                      <path d="M 2 2 L 8 5 L 2 8" fill="none" stroke="#0369a1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </marker>
+                 </defs>
+                 
+                 <!-- Users -> Subjects -->
+                 <path d="M 190 45 Q 100 45 100 100" fill="none" stroke="#0369a1" stroke-width="2" marker-end="url(#hw-arrow-db)"/>
+                 <!-- Users -> Class Schedules -->
+                 <path d="M 310 45 Q 400 45 400 100" fill="none" stroke="#0369a1" stroke-width="2" marker-end="url(#hw-arrow-db)"/>
+                 <!-- Users -> Attendance -->
+                 <path d="M 235 65 Q 235 180 135 210" fill="none" stroke="#0369a1" stroke-width="2" marker-end="url(#hw-arrow-db)"/>
+                 <!-- Users -> Leaves -->
+                 <path d="M 265 65 Q 265 180 365 210" fill="none" stroke="#0369a1" stroke-width="2" marker-end="url(#hw-arrow-db)"/>
+                 
+                 <!-- Subjects -> Schedules -->
+                 <path d="M 185 135 Q 250 145 310 135" fill="none" stroke="#0369a1" stroke-width="2" stroke-dasharray="5 5" marker-end="url(#hw-arrow-db)"/>
+                 <!-- Schedules -> Attendance -->
+                 <path d="M 400 165 Q 400 245 220 245" fill="none" stroke="#0369a1" stroke-width="2" marker-end="url(#hw-arrow-db)"/>
+              </svg>
+              
+              <div class="db-node" style="top: 10px; left: 50%; transform: translateX(-50%); width: 140px;">
+                 users<br><small>(Core Profiles)</small>
+              </div>
+              <div class="db-node" style="top: 110px; left: 20%; transform: translateX(-50%); width: 160px;">
+                 subjects<br><small>(Academic Courses)</small>
+              </div>
+              <div class="db-node" style="top: 110px; left: 80%; transform: translateX(-50%); width: 160px;">
+                 class_schedules<br><small>(Timetables)</small>
+              </div>
+              <div class="db-node" style="top: 220px; left: 25%; transform: translateX(-50%); width: 170px;">
+                 attendance_logs<br><small>(Core Records)</small>
+              </div>
+              <div class="db-node" style="top: 220px; left: 75%; transform: translateX(-50%); width: 170px;">
+                 leave_applications<br><small>(Requests)</small>
+              </div>
+              
+              <div class="edge-func-box">
+                 <strong>The Edge Function</strong>
+                 <div style="background: rgba(0,0,0,0.6); color: #67e8f9; padding: 4px; border-radius: 4px; font-family: monospace; font-size: 0.85rem; margin: 6px 0; letter-spacing: -0.05em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    {"rfid_uid": "&lt;CARD_UID&gt;"}
+                 </div>
+                 <div style="font-size: 1rem; line-height: 1.2;">
+                   ↳ Looks up student<br>
+                   ↳ Checks schedule<br>
+                   ↳ Inserts log securely
+                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="s4-notes">
+          <div class="sticky orange gsap-sticky" style="align-self: center;">
+            <i data-lucide="zap" class="inline-icon"></i> <strong>Edge Function</strong><br><br>
+            Receives RFID UID<br>via HTTP POST:<br>
+            <code
+              style="font-family:monospace;font-size:0.8em;background:rgba(0,0,0,0.1);padding:2px 5px;border-radius:3px; word-break: break-all;">{"rfid_uid":"EBACC836"}</code>
+          </div>
+          <div style="display: flex; gap: 20px; width: 100%;">
+            <div class="sticky blue gsap-sticky" style="flex: 1; padding: 15px;">
+              Validates UID →<br>checks active schedule<br>→ inserts into<br><strong>'attendance_logs'</strong> <i data-lucide="check" class="inline-icon"></i>
+            </div>
+            <div class="sticky purple gsap-sticky" style="flex: 1; padding: 15px;">
+              <strong>Row Level Security</strong><br>
+              Students only see<br>their own records.<br>Admins see all. <i data-lucide="lock" class="inline-icon"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       PINNED SHOWCASE — App Screens (Login → Admin)
+       Phone stays fixed, notes fly in/out with scroll
+       ====================================================== -->
+  <section id="showcase-section">
+    <div id="showcase-pin">
+      <!-- Step header: label + title -->
+      <div id="showcase-header">
+        <p id="sc-label" class="slide-label">Authentication Flow</p>
+        <h2 id="sc-title" class="slide-title">Login <span>Screen</span></h2>
+      </div>
+
+      <!-- Three-column canvas: left notes | phone | right notes -->
+      <div id="sc-canvas">
+        <div id="sc-left" class="sc-col"></div>
+
+        <div id="sc-phone-wrap">
+          <div class="phone-mockup phone-flat" id="sc-phone">
+            <div class="phone-notch"></div>
+            <div class="phone-screen">
+              <img id="sc-img" src="assets/screenshots/login-empty.jpg" alt="App Screen">
+            </div>
+            <div class="phone-bar"></div>
+          </div>
+          <!-- Step counter below phone -->
+          <p id="sc-counter" class="slide-badge">01 / 11</p>
+        </div>
+
+        <div id="sc-right" class="sc-col"></div>
+      </div>
+
+      <!-- Progress dots -->
+      <div id="sc-dots"></div>
+
+      <!-- Prev / Next arrow buttons -->
+      <div id="sc-nav">
+        <button id="sc-prev" class="sc-nav-btn" aria-label="Previous screen">&#8592;</button>
+        <button id="sc-next" class="sc-nav-btn" aria-label="Next screen">&#8594;</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       SLIDE 11 — SUMMARY
+       ====================================================== -->
+  <section id="slide-11" class="slide">
+    <div class="container">
+      <p class="slide-label">Summary</p>
+      <h2 class="slide-title gsap-fade">Key <span>Design Decisions</span></h2>
+      <div class="s11-grid">
+        <div class="sticky yellow sticky-xl gsap-sticky">
+          <i data-lucide="ruler" class="inline-icon"></i> <strong>90% Threshold</strong><br><br>
+          Minimum attendance<br>per subject = full<br>30/30 marks.<br>Approved leave = Present.
+        </div>
+        <div class="sticky pink sticky-xl gsap-sticky">
+          <i data-lucide="circle-stop" class="inline-icon"></i> <strong>3-Second Cooldown</strong><br><br>
+          NodeMCU ignores same<br>card within 3 seconds<br>to prevent duplicate<br>DB inserts.
+        </div>
+        <div class="sticky blue sticky-xl gsap-sticky">
+          <i data-lucide="shuffle" class="inline-icon"></i> <strong>Intelligent Grouping</strong><br><br>
+          Last 3 digits of<br>University ID auto-assigns<br>to Lab G1 (≤25)<br>or G2 (&gt;25).
+        </div>
+        <div class="sticky green sticky-xl gsap-sticky">
+          <i data-lucide="moon" class="inline-icon"></i> <strong>Dark / Light Mode</strong><br><br>
+          Theme persisted via<br>shared_preferences<br>as single source<br>of truth.
+        </div>
+        <div class="sticky orange sticky-xl gsap-sticky">
+          <i data-lucide="lock" class="inline-icon"></i> <strong>Row Level Security</strong><br><br>
+          Supabase RLS ensures<br>students only view<br>their own<br>attendance records.
+        </div>
+        <div class="sticky purple sticky-xl gsap-sticky">
+          <i data-lucide="radio" class="inline-icon"></i> <strong>RFID Required</strong><br><br>
+          Admin must link<br>physical RFID UID<br>to student profile<br>before taps work.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================================================
+       THANK YOU
+       ====================================================== -->
+  <section id="slide-thankyou" class="slide thankyou-slide">
+    <div class="container">
+      <div class="ty-inner">
+        <div class="ty-icon gsap-scale">
+          <img src="assets/icons/icon.png" alt="TapIn Icon" class="ty-app-icon">
+        </div>
+        <div class="sticky blue gsap-scale ty-thankyou-note">
+          <h2 class="ty-heading">Thank You!</h2>
+        </div>
+
+        <div class="ty-creators-wrapper gsap-scale">
+          <!-- Creator 1 -->
+          <div class="sticky yellow ty-creator">
+            <img src="assets/presenters/Naimur_Rashid.jpg" alt="MD Naimur Rashid" class="ty-avatar">
+            <div class="ty-creator-info">
+              <p class="ty-creator-name">MD Naimur Rashid</p>
+              <div class="ty-links">
+                <a href="https://naimurrashid.dev/" target="_blank" class="ty-link">
+                  🌐 naimurrashid.dev
+                </a>
+                <a href="https://github.com/naimurhamim" target="_blank" class="ty-link">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align:middle;margin-right:4px"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.546-1.385-1.335-1.755-1.335-1.755-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                  github/naimurhamim
+                </a>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Creator 2 -->
+          <div class="sticky green ty-creator">
+            <img src="assets/presenters/Sourav_Chakraborty.png" alt="Sourav Chakraborty" class="ty-avatar">
+            <div class="ty-creator-info">
+              <p class="ty-creator-name">Sourav Chakraborty</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>
