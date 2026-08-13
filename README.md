@@ -2,6 +2,8 @@
 
 A Flutter-based IoT-integrated smart attendance management system for universities. Students tap their RFID card on a NodeMCU device in the classroom, and attendance is recorded automatically in a cloud database (Supabase) in real time.
 
+🔗 **Live Documentation & Demo:** [tapin.naimurrashid.dev](https://tapin.naimurrashid.dev)
+
 ---
 
 ## Features
