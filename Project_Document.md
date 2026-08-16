@@ -45,11 +45,11 @@ TapIn is an IoT-integrated smart attendance management system designed for unive
 **Screenshots:**
 
 - **Login Screen:** Allows users to sign in and toggle dark mode.
-  <br>![Login](docs/assets/screenshots/authPage/login.jpg)
+  <br><img src="docs/assets/screenshots/authPage/login.jpg" width="250" alt="Login">
 - **Student Registration:** Collects student details for account creation.
-  <br>![Student Register](docs/assets/screenshots/authPage/student-register.jpg)
+  <br><img src="docs/assets/screenshots/authPage/student-register.jpg" width="250" alt="Student Register">
 - **Teacher Registration:** Collects teacher details for faculty account creation.
-  <br>![Teacher Register](docs/assets/screenshots/authPage/teacher-register.jpg)
+  <br><img src="docs/assets/screenshots/authPage/teacher-register.jpg" width="250" alt="Teacher Register">
 
 ---
 
@@ -67,21 +67,21 @@ TapIn is an IoT-integrated smart attendance management system designed for unive
 **Screenshots:**
 
 - **Admin Dashboard:** Overview of system stats and today's schedule.
-  <br>![Admin Dashboard](docs/assets/screenshots/AdminPanel/admin-dashboard.jpg)
+  <br><img src="docs/assets/screenshots/AdminPanel/admin-dashboard.jpg" width="250" alt="Admin Dashboard">
 - **Student List:** Searchable directory of all students.
-  <br>![Admin Students](docs/assets/screenshots/AdminPanel/admin-students.jpg)
+  <br><img src="docs/assets/screenshots/AdminPanel/admin-students.jpg" width="250" alt="Admin Students">
 - **Student Details & RFID:** View student stats and assign their RFID card UID.
-  <br>![Admin Student Details](docs/assets/screenshots/AdminPanel/admin-student-details.jpg)
+  <br><img src="docs/assets/screenshots/AdminPanel/admin-student-details.jpg" width="250" alt="Admin Student Details">
 - **Attendance Records:** Daily attendance log with override capabilities.
-  <br>![Admin Attendance](docs/assets/screenshots/AdminPanel/admin-attendance.jpg)
+  <br><img src="docs/assets/screenshots/AdminPanel/admin-attendance.jpg" width="250" alt="Admin Attendance">
 - **Leave Management:** Approve or reject pending student leave requests.
-  <br>![Admin Leave](docs/assets/screenshots/AdminPanel/admin-leave.jpg)
+  <br><img src="docs/assets/screenshots/AdminPanel/admin-leave.jpg" width="250" alt="Admin Leave">
 - **Add Schedule:** Interface to create new class schedules.
-  <br>![Admin Add Schedule](docs/assets/screenshots/AdminPanel/admin-add-schedule.jpg)
+  <br><img src="docs/assets/screenshots/AdminPanel/admin-add-schedule.jpg" width="250" alt="Admin Add Schedule">
 - **Geofence Settings:** Configure classroom location and radius for QR attendance.
-  <br>![Admin Geofence](docs/assets/screenshots/AdminPanel/admin-geofence.jpg)
+  <br><img src="docs/assets/screenshots/AdminPanel/admin-geofence.jpg" width="250" alt="Admin Geofence">
 - **Admin Profile:** View admin details and toggle theme.
-  <br>![Admin Profile](docs/assets/screenshots/AdminPanel/admin-profile.jpg)
+  <br><img src="docs/assets/screenshots/AdminPanel/admin-profile.jpg" width="250" alt="Admin Profile">
 
 ---
 
@@ -100,23 +100,23 @@ TapIn is an IoT-integrated smart attendance management system designed for unive
 **Screenshots:**
 
 - **Teacher Dashboard:** Shows pending leave requests and today's schedule.
-  <br>![Teacher Dashboard](docs/assets/screenshots/TeacherPanel/teacher-dashboard.jpg)
+  <br><img src="docs/assets/screenshots/TeacherPanel/teacher-dashboard.jpg" width="250" alt="Teacher Dashboard">
 - **Course Selection:** Allows teachers to pick their active courses.
-  <br>![Teacher Course Selection](docs/assets/screenshots/TeacherPanel/teacher-course-selection.jpg)
+  <br><img src="docs/assets/screenshots/TeacherPanel/teacher-course-selection.jpg" width="250" alt="Teacher Course Selection">
 - **Students List:** View all students enrolled in the department.
-  <br>![Teacher Students](docs/assets/screenshots/TeacherPanel/teacher-students.jpg)
+  <br><img src="docs/assets/screenshots/TeacherPanel/teacher-students.jpg" width="250" alt="Teacher Students">
 - **Student Analytics:** Deep dive into a student's attendance percentage and risk status.
-  <br>![Teacher Student Analytics](docs/assets/screenshots/TeacherPanel/teacher-student-analytics.jpg)
+  <br><img src="docs/assets/screenshots/TeacherPanel/teacher-student-analytics.jpg" width="250" alt="Teacher Student Analytics">
 - **Class Attendance Options:** Choose attendance mode (Manual or QR).
-  <br>![Teacher Class Attendance](docs/assets/screenshots/TeacherPanel/teacher-class-attendance.jpg)
+  <br><img src="docs/assets/screenshots/TeacherPanel/teacher-class-attendance.jpg" width="250" alt="Teacher Class Attendance">
 - **Manual Attendance:** Quickly mark students present or absent.
-  <br>![Teacher Manual Attendance](docs/assets/screenshots/TeacherPanel/teacher-manual-attendance.jpg)
+  <br><img src="docs/assets/screenshots/TeacherPanel/teacher-manual-attendance.jpg" width="250" alt="Teacher Manual Attendance">
 - **QR Attendance:** Display QR code for students to scan via their app.
-  <br>![Teacher QR Attendance](docs/assets/screenshots/TeacherPanel/teacher-qr-attendance.jpg)
+  <br><img src="docs/assets/screenshots/TeacherPanel/teacher-qr-attendance.jpg" width="250" alt="Teacher QR Attendance">
 - **Attendance Report:** Overview of attendance with Excel and PDF export options.
-  <br>![Teacher Attendance Report](docs/assets/screenshots/TeacherPanel/teacher-attendance-report.jpg)
+  <br><img src="docs/assets/screenshots/TeacherPanel/teacher-attendance-report.jpg" width="250" alt="Teacher Attendance Report">
 - **Teacher Profile:** View profile and settings.
-  <br>![Teacher Profile](docs/assets/screenshots/TeacherPanel/teacher-profile.jpg)
+  <br><img src="docs/assets/screenshots/TeacherPanel/teacher-profile.jpg" width="250" alt="Teacher Profile">
 
 ---
 
@@ -133,15 +133,15 @@ TapIn is an IoT-integrated smart attendance management system designed for unive
 **Screenshots:**
 
 - **Student Dashboard:** Overall attendance circle and today's class list.
-  <br>![Student Dashboard](docs/assets/screenshots/StudentPanel/student-dashboard.jpg)
+  <br><img src="docs/assets/screenshots/StudentPanel/student-dashboard.jpg" width="250" alt="Student Dashboard">
 - **Subject Attendance:** Breakdown of attendance by subject.
-  <br>![Student Attendance](docs/assets/screenshots/StudentPanel/student-attendance.jpg)
+  <br><img src="docs/assets/screenshots/StudentPanel/student-attendance.jpg" width="250" alt="Student Attendance">
 - **Attendance History:** Chronological list of all attendance records.
-  <br>![Student History](docs/assets/screenshots/StudentPanel/student-history.jpg)
+  <br><img src="docs/assets/screenshots/StudentPanel/student-history.jpg" width="250" alt="Student History">
 - **Leave Applications:** Track submitted leaves and apply for new ones.
-  <br>![Student Leave](docs/assets/screenshots/StudentPanel/student-leave.jpg)
+  <br><img src="docs/assets/screenshots/StudentPanel/student-leave.jpg" width="250" alt="Student Leave">
 - **Student Profile:** View student details, university ID, and lab group.
-  <br>![Student Profile](docs/assets/screenshots/StudentPanel/student-profile.jpg)
+  <br><img src="docs/assets/screenshots/StudentPanel/student-profile.jpg" width="250" alt="Student Profile">
 
 ---
 
