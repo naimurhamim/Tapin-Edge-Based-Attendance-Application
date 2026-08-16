@@ -1,7 +1,8 @@
 class AppConstants {
   // Supabase
   static const String supabaseUrl = 'https://nqmzpjaiphcfrnnlxhxv.supabase.co';
-  static const String supabaseAnonKey = 'sb_publishable_z2KxRFk5y0UQM0kNxsIJRQ_dVwFg2XN';
+  static const String supabaseAnonKey =
+      'sb_publishable_z2KxRFk5y0UQM0kNxsIJRQ_dVwFg2XN';
 
   // App Info
   static const String appName = 'TapIn';
@@ -11,6 +12,7 @@ class AppConstants {
   // Roles
   static const String roleStudent = 'student';
   static const String roleAdmin = 'admin';
+  static const String roleTeacher = 'teacher';
 
   // Department
   static const String department = 'IRE';

@@ -29,6 +29,51 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _obscurePassword = true;
   String? _errorMessage;
 
+  List<Map<String, dynamic>> _departments = [];
+  List<Map<String, dynamic>> _sessions = [];
+  String? _selectedDepartmentId;
+  String? _selectedDepartmentName;
+  String? _selectedSessionName;
+  bool _isLoadingDeps = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadDepartments();
+  }
+
+  Future<void> _loadDepartments() async {
+    try {
+      final res = await Supabase.instance.client
+          .from('departments')
+          .select('*, sessions(*)')
+          .order('name');
+      if (mounted) {
+        setState(() {
+          _departments = List<Map<String, dynamic>>.from(res);
+          _isLoadingDeps = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isLoadingDeps = false);
+    }
+  }
+
+  void _onDepartmentChanged(String? deptId) {
+    setState(() {
+      _selectedDepartmentId = deptId;
+      _selectedSessionName = null;
+      if (deptId != null) {
+        final dept = _departments.firstWhere((d) => d['id'] == deptId);
+        _selectedDepartmentName = dept['name'];
+        _sessions = List<Map<String, dynamic>>.from(dept['sessions'] ?? []);
+      } else {
+        _selectedDepartmentName = null;
+        _sessions = [];
+      }
+    });
+  }
+
   @override
   void dispose() {
     _nameController.dispose();
@@ -41,10 +86,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   String _getLabGroup(String universityId) {
     if (universityId.length < 3) return 'G1';
-    final lastThree = int.tryParse(
-          universityId.substring(universityId.length - 3),
-        ) ??
-        0;
+    final lastThree =
+        int.tryParse(universityId.substring(universityId.length - 3)) ?? 0;
     return lastThree <= 25 ? 'G1' : 'G2';
   }
 
@@ -58,14 +101,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (name.isEmpty ||
         universityId.isEmpty ||
         email.isEmpty ||
-        password.isEmpty) {
-      setState(() => _errorMessage = 'Please fill all required fields');
+        password.isEmpty ||
+        _selectedDepartmentName == null ||
+        _selectedSessionName == null) {
+      setState(
+        () => _errorMessage = 'Please fill all required fields and selections',
+      );
       return;
     }
 
     if (password.length < 6) {
-      setState(
-          () => _errorMessage = 'Password must be at least 6 characters');
+      setState(() => _errorMessage = 'Password must be at least 6 characters');
       return;
     }
 
@@ -91,8 +137,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         'university_id': universityId,
         'email': email,
         'role': AppConstants.roleStudent,
-        'department': AppConstants.department,
-        'section': AppConstants.section,
+        'department': _selectedDepartmentName,
+        'section': _selectedSessionName,
         'lab_group': _getLabGroup(universityId),
         'phone_number': phone.isEmpty ? null : phone,
       });
@@ -130,8 +176,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final bg = isDark ? AppTheme.darkBg : AppTheme.lightBg;
     final cardColor = isDark ? AppTheme.darkCard : AppTheme.lightSurface;
     final textColor = isDark ? AppTheme.darkText : AppTheme.lightText;
-    final subTextColor =
-        isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary;
+    final subTextColor = isDark
+        ? AppTheme.darkTextSecondary
+        : AppTheme.lightTextSecondary;
     final borderColor = isDark ? AppTheme.darkBorder : AppTheme.lightBorder;
 
     return Scaffold(
@@ -188,8 +235,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       decoration: InputDecoration(
                         hintText: 'Your full name',
                         hintStyle: TextStyle(color: subTextColor),
-                        prefixIcon: Icon(Icons.person_outlined,
-                            color: subTextColor),
+                        prefixIcon: Icon(
+                          Icons.person_outlined,
+                          color: subTextColor,
+                        ),
                       ),
                     ),
 
@@ -204,8 +253,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       decoration: InputDecoration(
                         hintText: 'e.g. 2101001',
                         hintStyle: TextStyle(color: subTextColor),
-                        prefixIcon:
-                            Icon(Icons.badge_outlined, color: subTextColor),
+                        prefixIcon: Icon(
+                          Icons.badge_outlined,
+                          color: subTextColor,
+                        ),
                       ),
                     ),
 
@@ -221,8 +272,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       decoration: InputDecoration(
                         hintText: 'your@email.com',
                         hintStyle: TextStyle(color: subTextColor),
-                        prefixIcon: Icon(Icons.email_outlined,
-                            color: subTextColor),
+                        prefixIcon: Icon(
+                          Icons.email_outlined,
+                          color: subTextColor,
+                        ),
                       ),
                     ),
 
@@ -238,8 +291,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       decoration: InputDecoration(
                         hintText: 'Min. 6 characters',
                         hintStyle: TextStyle(color: subTextColor),
-                        prefixIcon:
-                            Icon(Icons.lock_outlined, color: subTextColor),
+                        prefixIcon: Icon(
+                          Icons.lock_outlined,
+                          color: subTextColor,
+                        ),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscurePassword
@@ -248,7 +303,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             color: subTextColor,
                           ),
                           onPressed: () => setState(
-                              () => _obscurePassword = !_obscurePassword),
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                         ),
                       ),
                     ),
@@ -265,40 +321,86 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       decoration: InputDecoration(
                         hintText: '01XXXXXXXXX',
                         hintStyle: TextStyle(color: subTextColor),
-                        prefixIcon: Icon(Icons.phone_outlined,
-                            color: subTextColor),
+                        prefixIcon: Icon(
+                          Icons.phone_outlined,
+                          color: subTextColor,
+                        ),
                       ),
                     ),
 
                     const SizedBox(height: 20),
 
-                    // Info box
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppTheme.primary.withOpacity(0.08),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                            color: AppTheme.primary.withOpacity(0.2)),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.info_outline,
-                              color: AppTheme.primary, size: 16),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Dept: IRE | Session: 2021-22 | Lab group auto-assigned by ID',
-                              style: TextStyle(
-                                color: AppTheme.primary,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
+                    if (_isLoadingDeps)
+                      const Center(child: CircularProgressIndicator())
+                    else ...[
+                      _fieldLabel('Department *', textColor),
+                      const SizedBox(height: 8),
+                      DropdownButtonFormField<String>(
+                        value: _selectedDepartmentId,
+                        dropdownColor: cardColor,
+                        style: TextStyle(color: textColor),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                        ],
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                          ),
+                        ),
+                        items: _departments
+                            .map(
+                              (d) => DropdownMenuItem<String>(
+                                value: d['id'],
+                                child: Text(d['name']),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: _onDepartmentChanged,
+                        hint: Text(
+                          'Select Department',
+                          style: TextStyle(color: subTextColor),
+                        ),
                       ),
-                    ),
+
+                      const SizedBox(height: 20),
+
+                      _fieldLabel('Session *', textColor),
+                      const SizedBox(height: 8),
+                      DropdownButtonFormField<String>(
+                        value: _selectedSessionName,
+                        dropdownColor: cardColor,
+                        style: TextStyle(color: textColor),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                          ),
+                        ),
+                        items: _sessions
+                            .map(
+                              (s) => DropdownMenuItem<String>(
+                                value: s['name'],
+                                child: Text(s['name']),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: _selectedDepartmentId == null
+                            ? null
+                            : (val) {
+                                setState(() => _selectedSessionName = val);
+                              },
+                        hint: Text(
+                          'Select Session',
+                          style: TextStyle(color: subTextColor),
+                        ),
+                        disabledHint: Text(
+                          'Select Department first',
+                          style: TextStyle(color: subTextColor),
+                        ),
+                      ),
+                    ],
 
                     // Error message
                     if (_errorMessage != null) ...[
@@ -309,12 +411,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           color: AppTheme.error.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                              color: AppTheme.error.withOpacity(0.3)),
+                            color: AppTheme.error.withOpacity(0.3),
+                          ),
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.error_outline,
-                                color: AppTheme.error, size: 16),
+                            const Icon(
+                              Icons.error_outline,
+                              color: AppTheme.error,
+                              size: 16,
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
@@ -390,11 +496,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget _fieldLabel(String label, Color color) {
     return Text(
       label,
-      style: TextStyle(
-        fontSize: 13,
-        fontWeight: FontWeight.w600,
-        color: color,
-      ),
+      style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: color),
     );
   }
 }

@@ -50,10 +50,7 @@ class _TapInAppState extends State<TapInApp> {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: _isDarkMode ? ThemeMode.dark : ThemeMode.light,
-      home: SplashScreen(
-        isDarkMode: _isDarkMode,
-        onThemeToggle: toggleTheme,
-      ),
+      home: SplashScreen(isDarkMode: _isDarkMode, onThemeToggle: toggleTheme),
     );
   }
 }

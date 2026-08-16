@@ -3,7 +3,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/theme/app_theme.dart';
 import '../student/student_home.dart';
 import '../admin/admin_home.dart';
+import '../teacher/teacher_home.dart';
 import 'register_screen.dart';
+import 'teacher_register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   final bool isDarkMode;
@@ -73,6 +75,16 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         );
+      } else if (user['role'] == 'teacher') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => TeacherHome(
+              isDarkMode: widget.isDarkMode,
+              onThemeToggle: widget.onThemeToggle,
+            ),
+          ),
+        );
       } else {
         Navigator.pushReplacement(
           context,
@@ -99,8 +111,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final bg = isDark ? AppTheme.darkBg : AppTheme.lightBg;
     final cardColor = isDark ? AppTheme.darkCard : AppTheme.lightSurface;
     final textColor = isDark ? AppTheme.darkText : AppTheme.lightText;
-    final subTextColor =
-        isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary;
+    final subTextColor = isDark
+        ? AppTheme.darkTextSecondary
+        : AppTheme.lightTextSecondary;
     final borderColor = isDark ? AppTheme.darkBorder : AppTheme.lightBorder;
 
     return Scaffold(
@@ -159,10 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
               Center(
                 child: Text(
                   'Sign in to your TapIn account',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: subTextColor,
-                  ),
+                  style: TextStyle(fontSize: 14, color: subTextColor),
                 ),
               ),
 
@@ -196,8 +206,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: InputDecoration(
                         hintText: 'your@email.com',
                         hintStyle: TextStyle(color: subTextColor),
-                        prefixIcon:
-                            Icon(Icons.email_outlined, color: subTextColor),
+                        prefixIcon: Icon(
+                          Icons.email_outlined,
+                          color: subTextColor,
+                        ),
                       ),
                     ),
 
@@ -220,8 +232,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       decoration: InputDecoration(
                         hintText: '••••••••',
                         hintStyle: TextStyle(color: subTextColor),
-                        prefixIcon:
-                            Icon(Icons.lock_outlined, color: subTextColor),
+                        prefixIcon: Icon(
+                          Icons.lock_outlined,
+                          color: subTextColor,
+                        ),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscurePassword
@@ -230,7 +244,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             color: subTextColor,
                           ),
                           onPressed: () => setState(
-                              () => _obscurePassword = !_obscurePassword),
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                         ),
                       ),
                       onSubmitted: (_) => _login(),
@@ -245,12 +260,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: AppTheme.error.withOpacity(0.1),
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                              color: AppTheme.error.withOpacity(0.3)),
+                            color: AppTheme.error.withOpacity(0.3),
+                          ),
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.error_outline,
-                                color: AppTheme.error, size: 16),
+                            const Icon(
+                              Icons.error_outline,
+                              color: AppTheme.error,
+                              size: 16,
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
@@ -293,31 +312,64 @@ class _LoginScreenState extends State<LoginScreen> {
 
               // Register link
               Center(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Column(
                   children: [
-                    Text(
-                      "Don't have an account? ",
-                      style: TextStyle(color: subTextColor, fontSize: 14),
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => RegisterScreen(
-                            isDarkMode: widget.isDarkMode,
-                            onThemeToggle: widget.onThemeToggle,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Are you a student? ",
+                          style: TextStyle(color: subTextColor, fontSize: 14),
+                        ),
+                        GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => RegisterScreen(
+                                isDarkMode: widget.isDarkMode,
+                                onThemeToggle: widget.onThemeToggle,
+                              ),
+                            ),
+                          ),
+                          child: const Text(
+                            'Register Here',
+                            style: TextStyle(
+                              color: AppTheme.primary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                      ),
-                      child: const Text(
-                        'Register',
-                        style: TextStyle(
-                          color: AppTheme.primary,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Are you a teacher? ",
+                          style: TextStyle(color: subTextColor, fontSize: 14),
                         ),
-                      ),
+                        GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => TeacherRegisterScreen(
+                                isDarkMode: widget.isDarkMode,
+                                onThemeToggle: widget.onThemeToggle,
+                              ),
+                            ),
+                          ),
+                          child: const Text(
+                            'Register Here',
+                            style: TextStyle(
+                              color: AppTheme.primary,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -331,7 +383,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   onTap: () => widget.onThemeToggle(!isDark),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 8),
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     decoration: BoxDecoration(
                       color: cardColor,
                       borderRadius: BorderRadius.circular(20),
@@ -348,8 +402,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(width: 8),
                         Text(
                           isDark ? 'Light Mode' : 'Dark Mode',
-                          style:
-                              TextStyle(color: subTextColor, fontSize: 13),
+                          style: TextStyle(color: subTextColor, fontSize: 13),
                         ),
                       ],
                     ),

@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'login_screen.dart';
 import '../student/student_home.dart';
 import '../admin/admin_home.dart';
+import '../teacher/teacher_home.dart';
 
 class SplashScreen extends StatefulWidget {
   final bool isDarkMode;
@@ -46,18 +47,18 @@ class _SplashScreenState extends State<SplashScreen>
     _logoScale = Tween<double>(begin: 0.5, end: 1.0).animate(
       CurvedAnimation(parent: _logoController, curve: Curves.elasticOut),
     );
-    _logoOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _logoController, curve: Curves.easeIn),
-    );
-    _textOpacity = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _textController, curve: Curves.easeIn),
-    );
+    _logoOpacity = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _logoController, curve: Curves.easeIn));
+    _textOpacity = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _textController, curve: Curves.easeIn));
     _textSlide = Tween<Offset>(
       begin: const Offset(0, 0.3),
       end: Offset.zero,
-    ).animate(
-      CurvedAnimation(parent: _textController, curve: Curves.easeOut),
-    );
+    ).animate(CurvedAnimation(parent: _textController, curve: Curves.easeOut));
     _logoController.forward().then((_) => _textController.forward());
   }
 
@@ -67,10 +68,12 @@ class _SplashScreenState extends State<SplashScreen>
 
     final session = Supabase.instance.client.auth.currentSession;
     if (session == null) {
-      _goTo(LoginScreen(
-        isDarkMode: widget.isDarkMode,
-        onThemeToggle: widget.onThemeToggle,
-      ));
+      _goTo(
+        LoginScreen(
+          isDarkMode: widget.isDarkMode,
+          onThemeToggle: widget.onThemeToggle,
+        ),
+      );
       return;
     }
 
@@ -82,15 +85,26 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (!mounted) return;
     if (user['role'] == 'admin') {
-      _goTo(AdminHome(
-        isDarkMode: widget.isDarkMode,
-        onThemeToggle: widget.onThemeToggle,
-      ));
+      _goTo(
+        AdminHome(
+          isDarkMode: widget.isDarkMode,
+          onThemeToggle: widget.onThemeToggle,
+        ),
+      );
+    } else if (user['role'] == 'teacher') {
+      _goTo(
+        TeacherHome(
+          isDarkMode: widget.isDarkMode,
+          onThemeToggle: widget.onThemeToggle,
+        ),
+      );
     } else {
-      _goTo(StudentHome(
-        isDarkMode: widget.isDarkMode,
-        onThemeToggle: widget.onThemeToggle,
-      ));
+      _goTo(
+        StudentHome(
+          isDarkMode: widget.isDarkMode,
+          onThemeToggle: widget.onThemeToggle,
+        ),
+      );
     }
   }
 
@@ -143,7 +157,7 @@ class _SplashScreenState extends State<SplashScreen>
                       borderRadius: BorderRadius.circular(28),
                       boxShadow: [
                         BoxShadow(
-                          color: primary.withOpacity(0.35),
+                          color: primary.withValues(alpha: 0.35),
                           blurRadius: 32,
                           offset: const Offset(0, 12),
                         ),
@@ -172,7 +186,9 @@ class _SplashScreenState extends State<SplashScreen>
                         style: TextStyle(
                           fontSize: 38,
                           fontWeight: FontWeight.w800,
-                          color: isDark ? Colors.white : const Color(0xFF0F172A),
+                          color: isDark
+                              ? Colors.white
+                              : const Color(0xFF0F172A),
                           letterSpacing: -1.5,
                         ),
                       ),
@@ -220,7 +236,7 @@ class _SplashScreenState extends State<SplashScreen>
         width: 8,
         height: 8,
         decoration: BoxDecoration(
-          color: color.withOpacity(0.3 + (val * 0.7)),
+          color: color.withValues(alpha: 0.3 + (val * 0.7)),
           shape: BoxShape.circle,
         ),
       ),

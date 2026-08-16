@@ -3,6 +3,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_theme.dart';
 import '../auth/login_screen.dart';
+import 'qr_scanner_screen.dart';
+import 'package:tapin_attendance/core/theme/app_theme.dart';
+import 'package:tapin_attendance/presentation/screens/auth/login_screen.dart';
+import 'package:tapin_attendance/presentation/widgets/change_password_dialog.dart';
 
 class StudentHome extends StatefulWidget {
   final bool isDarkMode;
@@ -22,11 +26,39 @@ class _StudentHomeState extends State<StudentHome> {
   int _currentIndex = 0;
   Map<String, dynamic>? _userData;
   bool _isLoading = true;
+  late RealtimeChannel _channel;
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
+    _setupRealtime();
+  }
+
+  void _setupRealtime() {
+    final userId = Supabase.instance.client.auth.currentUser!.id;
+    _channel = Supabase.instance.client
+        .channel('public:users:profile_$userId')
+        .onPostgresChanges(
+          event: PostgresChangeEvent.update,
+          schema: 'public',
+          table: 'users',
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'id',
+            value: userId,
+          ),
+          callback: (payload) {
+            _loadUserData();
+          },
+        )
+        .subscribe();
+  }
+
+  @override
+  void dispose() {
+    Supabase.instance.client.removeChannel(_channel);
+    super.dispose();
   }
 
   Future<void> _loadUserData() async {
@@ -89,9 +121,19 @@ class _StudentHomeState extends State<StudentHome> {
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _navItem(0, Icons.home_outlined, Icons.home, 'Home'),
-                _navItem(1, Icons.bar_chart_outlined, Icons.bar_chart, 'Attendance'),
+                _navItem(
+                  1,
+                  Icons.bar_chart_outlined,
+                  Icons.bar_chart,
+                  'Attendance',
+                ),
                 _navItem(2, Icons.history_outlined, Icons.history, 'History'),
-                _navItem(3, Icons.event_note_outlined, Icons.event_note, 'Leave'),
+                _navItem(
+                  3,
+                  Icons.event_note_outlined,
+                  Icons.event_note,
+                  'Leave',
+                ),
                 _navItem(4, Icons.person_outlined, Icons.person, 'Profile'),
               ],
             ),
@@ -147,6 +189,7 @@ class _DashboardTab extends StatefulWidget {
 class _DashboardTabState extends State<_DashboardTab> {
   List<Map<String, dynamic>> _todayClasses = [];
   Map<String, dynamic> _stats = {};
+  List<Map<String, dynamic>> _lowAttendanceSubjects = []; // NEW
   bool _isLoading = true;
 
   @override
@@ -186,6 +229,34 @@ class _DashboardTabState extends State<_DashboardTab> {
       final absent = logs.where((l) => l['status'] == 'absent').length;
       final percentage = total > 0 ? (present / total * 100) : 0.0;
 
+      // ── Low attendance: per-subject check ──────────────
+      final subjects = await Supabase.instance.client
+          .from('subjects')
+          .select('id, name, code')
+          .eq('department', dept)
+          .eq('section', section);
+
+      List<Map<String, dynamic>> lowSubjects = [];
+      for (final subject in subjects) {
+        final sLogs = logs
+            .where((l) => l['subject_id'] == subject['id'])
+            .toList();
+        if (sLogs.isEmpty) continue;
+        final sPresent = sLogs.where((l) => l['status'] == 'present').length;
+        final sPct = sPresent / sLogs.length * 100;
+        if (sPct < 75) {
+          lowSubjects.add({
+            'name': subject['name'],
+            'code': subject['code'],
+            'percentage': sPct,
+          });
+        }
+      }
+      lowSubjects.sort(
+        (a, b) =>
+            (a['percentage'] as double).compareTo(b['percentage'] as double),
+      );
+
       setState(() {
         _todayClasses = List<Map<String, dynamic>>.from(schedules);
         _stats = {
@@ -194,6 +265,7 @@ class _DashboardTabState extends State<_DashboardTab> {
           'absent': absent,
           'percentage': percentage,
         };
+        _lowAttendanceSubjects = lowSubjects;
         _isLoading = false;
       });
     } catch (e) {
@@ -206,8 +278,9 @@ class _DashboardTabState extends State<_DashboardTab> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? AppTheme.darkBg : AppTheme.lightBg;
     final textColor = isDark ? AppTheme.darkText : AppTheme.lightText;
-    final subTextColor =
-        isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary;
+    final subTextColor = isDark
+        ? AppTheme.darkTextSecondary
+        : AppTheme.lightTextSecondary;
     final cardColor = isDark ? AppTheme.darkCard : AppTheme.lightSurface;
     final borderColor = isDark ? AppTheme.darkBorder : AppTheme.lightBorder;
     final name = widget.userData?['name'] ?? 'Student';
@@ -220,7 +293,8 @@ class _DashboardTabState extends State<_DashboardTab> {
       body: SafeArea(
         child: _isLoading
             ? const Center(
-                child: CircularProgressIndicator(color: AppTheme.primary))
+                child: CircularProgressIndicator(color: AppTheme.primary),
+              )
             : RefreshIndicator(
                 onRefresh: _loadData,
                 color: AppTheme.primary,
@@ -250,7 +324,9 @@ class _DashboardTabState extends State<_DashboardTab> {
                                 Text(
                                   '$uid • Lab $labGroup',
                                   style: TextStyle(
-                                      fontSize: 13, color: subTextColor),
+                                    fontSize: 13,
+                                    color: subTextColor,
+                                  ),
                                 ),
                               ],
                             ),
@@ -266,8 +342,11 @@ class _DashboardTabState extends State<_DashboardTab> {
                               ),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Icon(Icons.fingerprint,
-                                color: Colors.white, size: 24),
+                            child: const Icon(
+                              Icons.fingerprint,
+                              color: Colors.white,
+                              size: 24,
+                            ),
                           ),
                         ],
                       ),
@@ -311,13 +390,17 @@ class _DashboardTabState extends State<_DashboardTab> {
                                   const SizedBox(height: 8),
                                   Row(
                                     children: [
-                                      _statChip('Present',
-                                          '${_stats['present'] ?? 0}',
-                                          Colors.white),
+                                      _statChip(
+                                        'Present',
+                                        '${_stats['present'] ?? 0}',
+                                        Colors.white,
+                                      ),
                                       const SizedBox(width: 8),
-                                      _statChip('Absent',
-                                          '${_stats['absent'] ?? 0}',
-                                          Colors.white70),
+                                      _statChip(
+                                        'Absent',
+                                        '${_stats['absent'] ?? 0}',
+                                        Colors.white70,
+                                      ),
                                     ],
                                   ),
                                 ],
@@ -332,11 +415,13 @@ class _DashboardTabState extends State<_DashboardTab> {
                                   CircularProgressIndicator(
                                     value: percentage / 100,
                                     strokeWidth: 8,
-                                    backgroundColor:
-                                        Colors.white.withOpacity(0.3),
+                                    backgroundColor: Colors.white.withOpacity(
+                                      0.3,
+                                    ),
                                     valueColor:
                                         const AlwaysStoppedAnimation<Color>(
-                                            Colors.white),
+                                          Colors.white,
+                                        ),
                                   ),
                                   Text(
                                     percentage >= 90 ? '✓' : '!',
@@ -350,6 +435,137 @@ class _DashboardTabState extends State<_DashboardTab> {
                               ),
                             ),
                           ],
+                        ),
+                      ),
+
+                      // ── Low Attendance Alert Banner ─────────────────
+                      if (_lowAttendanceSubjects.isNotEmpty) ...[
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [
+                                AppTheme.error.withValues(alpha: 0.9),
+                                AppTheme.error.withValues(alpha: 0.7),
+                              ],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Row(
+                                children: [
+                                  Icon(
+                                    Icons.warning_amber_rounded,
+                                    color: Colors.white,
+                                    size: 22,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(
+                                    'Low Attendance Alert!',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              ..._lowAttendanceSubjects.map(
+                                (sub) => Padding(
+                                  padding: const EdgeInsets.only(top: 6),
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.circle,
+                                        color: Colors.white70,
+                                        size: 6,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          '${sub['code']} – ${sub['name']}',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 8,
+                                          vertical: 2,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withValues(
+                                            alpha: 0.25,
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
+                                        ),
+                                        child: Text(
+                                          '${(sub['percentage'] as double).toStringAsFixed(1)}%',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              const Text(
+                                'Attend more classes to avoid issues.',
+                                style: TextStyle(
+                                  color: Colors.white70,
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+
+                      // Scan QR Code Button
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const QrScannerScreen(),
+                            ),
+                          ).then((val) {
+                            if (val == true) {
+                              _loadData();
+                            }
+                          });
+                        },
+                        icon: const Icon(Icons.qr_code_scanner, size: 24),
+                        label: const Text(
+                          'Scan Class QR Code',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.accent,
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size(double.infinity, 56),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 2,
                         ),
                       ),
 
@@ -377,13 +593,18 @@ class _DashboardTabState extends State<_DashboardTab> {
                           child: Center(
                             child: Column(
                               children: [
-                                Icon(Icons.celebration_outlined,
-                                    color: subTextColor, size: 32),
+                                Icon(
+                                  Icons.celebration_outlined,
+                                  color: subTextColor,
+                                  size: 32,
+                                ),
                                 const SizedBox(height: 8),
                                 Text(
                                   'No classes today!',
                                   style: TextStyle(
-                                      color: subTextColor, fontSize: 14),
+                                    color: subTextColor,
+                                    fontSize: 14,
+                                  ),
                                 ),
                               ],
                             ),
@@ -392,13 +613,15 @@ class _DashboardTabState extends State<_DashboardTab> {
                       else
                         ...(_todayClasses.map((cls) {
                           final subject = cls['subjects'];
-                          final start = cls['start_time']
-                              .toString()
-                              .substring(0, 5);
-                          final end =
-                              cls['end_time'].toString().substring(0, 5);
-                          final isLab =
-                              cls['lab_group'] != 'all';
+                          final start = cls['start_time'].toString().substring(
+                            0,
+                            5,
+                          );
+                          final end = cls['end_time'].toString().substring(
+                            0,
+                            5,
+                          );
+                          final isLab = cls['lab_group'] != 'all';
 
                           return Container(
                             margin: const EdgeInsets.only(bottom: 10),
@@ -464,14 +687,16 @@ class _DashboardTabState extends State<_DashboardTab> {
                                     const SizedBox(height: 4),
                                     Container(
                                       padding: const EdgeInsets.symmetric(
-                                          horizontal: 8, vertical: 2),
+                                        horizontal: 8,
+                                        vertical: 2,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color: (isLab
-                                                ? AppTheme.accent
-                                                : AppTheme.primary)
-                                            .withOpacity(0.1),
-                                        borderRadius:
-                                            BorderRadius.circular(6),
+                                        color:
+                                            (isLab
+                                                    ? AppTheme.accent
+                                                    : AppTheme.primary)
+                                                .withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(6),
                                       ),
                                       child: Text(
                                         isLab ? 'Lab' : 'Theory',
@@ -507,7 +732,11 @@ class _DashboardTabState extends State<_DashboardTab> {
       ),
       child: Text(
         '$label: $value',
-        style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w500),
+        style: TextStyle(
+          color: color,
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }
@@ -555,15 +784,15 @@ class _AttendanceTabState extends State<_AttendanceTab> {
 
       List<Map<String, dynamic>> stats = [];
       for (final subject in subjects) {
-        final subjectLogs =
-            logs.where((l) => l['subject_id'] == subject['id']).toList();
+        final subjectLogs = logs
+            .where((l) => l['subject_id'] == subject['id'])
+            .toList();
         final total = subjectLogs.length;
-        final present =
-            subjectLogs.where((l) => l['status'] == 'present').length;
-        final absent =
-            subjectLogs.where((l) => l['status'] == 'absent').length;
-        final percentage =
-            total > 0 ? (present / total * 100) : 0.0;
+        final present = subjectLogs
+            .where((l) => l['status'] == 'present')
+            .length;
+        final absent = subjectLogs.where((l) => l['status'] == 'absent').length;
+        final percentage = total > 0 ? (present / total * 100) : 0.0;
 
         stats.add({
           'subject': subject,
@@ -588,8 +817,9 @@ class _AttendanceTabState extends State<_AttendanceTab> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? AppTheme.darkBg : AppTheme.lightBg;
     final textColor = isDark ? AppTheme.darkText : AppTheme.lightText;
-    final subTextColor =
-        isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary;
+    final subTextColor = isDark
+        ? AppTheme.darkTextSecondary
+        : AppTheme.lightTextSecondary;
     final cardColor = isDark ? AppTheme.darkCard : AppTheme.lightSurface;
     final borderColor = isDark ? AppTheme.darkBorder : AppTheme.lightBorder;
 
@@ -614,8 +844,8 @@ class _AttendanceTabState extends State<_AttendanceTab> {
             Expanded(
               child: _isLoading
                   ? const Center(
-                      child:
-                          CircularProgressIndicator(color: AppTheme.primary))
+                      child: CircularProgressIndicator(color: AppTheme.primary),
+                    )
                   : RefreshIndicator(
                       onRefresh: _loadData,
                       color: AppTheme.primary,
@@ -625,21 +855,28 @@ class _AttendanceTabState extends State<_AttendanceTab> {
                         itemBuilder: (context, index) {
                           final stat = _subjectStats[index];
                           final subject = stat['subject'];
-                          final percentage =
-                              (stat['percentage'] as double);
+                          final percentage = (stat['percentage'] as double);
+                          final isLow = percentage < 75;
                           final color = percentage >= 90
                               ? AppTheme.success
                               : (percentage >= 75
-                                  ? AppTheme.warning
-                                  : AppTheme.error);
+                                    ? AppTheme.warning
+                                    : AppTheme.error);
 
                           return Container(
                             margin: const EdgeInsets.only(bottom: 12),
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
-                              color: cardColor,
+                              color: isLow
+                                  ? AppTheme.error.withValues(alpha: 0.05)
+                                  : cardColor,
                               borderRadius: BorderRadius.circular(16),
-                              border: Border.all(color: borderColor),
+                              border: Border.all(
+                                color: isLow
+                                    ? AppTheme.error.withValues(alpha: 0.4)
+                                    : borderColor,
+                                width: isLow ? 1.5 : 1.0,
+                              ),
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -651,13 +888,25 @@ class _AttendanceTabState extends State<_AttendanceTab> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            subject['code'],
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w700,
-                                              color: AppTheme.primary,
-                                            ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                subject['code'],
+                                                style: TextStyle(
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w700,
+                                                  color: AppTheme.primary,
+                                                ),
+                                              ),
+                                              if (isLow) ...[
+                                                const SizedBox(width: 6),
+                                                const Icon(
+                                                  Icons.warning_amber_rounded,
+                                                  color: AppTheme.error,
+                                                  size: 14,
+                                                ),
+                                              ],
+                                            ],
                                           ),
                                           const SizedBox(height: 2),
                                           Text(
@@ -673,11 +922,12 @@ class _AttendanceTabState extends State<_AttendanceTab> {
                                     ),
                                     Container(
                                       padding: const EdgeInsets.symmetric(
-                                          horizontal: 12, vertical: 6),
+                                        horizontal: 12,
+                                        vertical: 6,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: color.withOpacity(0.1),
-                                        borderRadius:
-                                            BorderRadius.circular(10),
+                                        borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Text(
                                         '${percentage.toStringAsFixed(1)}%',
@@ -695,24 +945,33 @@ class _AttendanceTabState extends State<_AttendanceTab> {
                                   borderRadius: BorderRadius.circular(4),
                                   child: LinearProgressIndicator(
                                     value: percentage / 100,
-                                    backgroundColor:
-                                        color.withOpacity(0.15),
-                                    valueColor:
-                                        AlwaysStoppedAnimation<Color>(color),
+                                    backgroundColor: color.withOpacity(0.15),
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      color,
+                                    ),
                                     minHeight: 6,
                                   ),
                                 ),
                                 const SizedBox(height: 10),
                                 Row(
                                   children: [
-                                    _chip('Present', '${stat['present']}',
-                                        AppTheme.success),
+                                    _chip(
+                                      'Present',
+                                      '${stat['present']}',
+                                      AppTheme.success,
+                                    ),
                                     const SizedBox(width: 8),
-                                    _chip('Absent', '${stat['absent']}',
-                                        AppTheme.error),
+                                    _chip(
+                                      'Absent',
+                                      '${stat['absent']}',
+                                      AppTheme.error,
+                                    ),
                                     const SizedBox(width: 8),
-                                    _chip('Total', '${stat['total']}',
-                                        subTextColor),
+                                    _chip(
+                                      'Total',
+                                      '${stat['total']}',
+                                      subTextColor,
+                                    ),
                                   ],
                                 ),
                               ],
@@ -738,7 +997,10 @@ class _AttendanceTabState extends State<_AttendanceTab> {
       child: Text(
         '$label: $value',
         style: TextStyle(
-            color: color, fontSize: 12, fontWeight: FontWeight.w500),
+          color: color,
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }
@@ -789,8 +1051,9 @@ class _HistoryTabState extends State<_HistoryTab> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? AppTheme.darkBg : AppTheme.lightBg;
     final textColor = isDark ? AppTheme.darkText : AppTheme.lightText;
-    final subTextColor =
-        isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary;
+    final subTextColor = isDark
+        ? AppTheme.darkTextSecondary
+        : AppTheme.lightTextSecondary;
     final cardColor = isDark ? AppTheme.darkCard : AppTheme.lightSurface;
     final borderColor = isDark ? AppTheme.darkBorder : AppTheme.lightBorder;
 
@@ -815,133 +1078,132 @@ class _HistoryTabState extends State<_HistoryTab> {
             Expanded(
               child: _isLoading
                   ? const Center(
-                      child:
-                          CircularProgressIndicator(color: AppTheme.primary))
+                      child: CircularProgressIndicator(color: AppTheme.primary),
+                    )
                   : _logs.isEmpty
-                      ? Center(
-                          child: Text('No attendance records yet',
-                              style: TextStyle(color: subTextColor)))
-                      : RefreshIndicator(
-                          onRefresh: _loadData,
-                          color: AppTheme.primary,
-                          child: ListView.builder(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20),
-                            itemCount: _logs.length,
-                            itemBuilder: (context, index) {
-                              final log = _logs[index];
-                              final subject = log['subjects'];
-                              final status = log['status'] ?? 'present';
-                              final date = log['date'] ?? '';
-                              final entryTime = log['entry_time'] != null
-                                  ? DateFormat('hh:mm a').format(
-                                      DateTime.parse(log['entry_time'])
-                                          .toLocal())
-                                  : '-';
-                              final exitTime = log['exit_time'] != null
-                                  ? DateFormat('hh:mm a').format(
-                                      DateTime.parse(log['exit_time'])
-                                          .toLocal())
-                                  : '-';
+                  ? Center(
+                      child: Text(
+                        'No attendance records yet',
+                        style: TextStyle(color: subTextColor),
+                      ),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: _loadData,
+                      color: AppTheme.primary,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        itemCount: _logs.length,
+                        itemBuilder: (context, index) {
+                          final log = _logs[index];
+                          final subject = log['subjects'];
+                          final status = log['status'] ?? 'present';
+                          final date = log['date'] ?? '';
+                          final entryTime = log['entry_time'] != null
+                              ? DateFormat('hh:mm a').format(
+                                  DateTime.parse(log['entry_time']).toLocal(),
+                                )
+                              : '-';
+                          final exitTime = log['exit_time'] != null
+                              ? DateFormat('hh:mm a').format(
+                                  DateTime.parse(log['exit_time']).toLocal(),
+                                )
+                              : '-';
 
-                              final statusColor = status == 'present'
-                                  ? AppTheme.success
-                                  : status == 'condoned'
-                                      ? AppTheme.warning
-                                      : AppTheme.error;
+                          final statusColor = status == 'present'
+                              ? AppTheme.success
+                              : status == 'condoned'
+                              ? AppTheme.warning
+                              : AppTheme.error;
 
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 10),
-                                padding: const EdgeInsets.all(14),
-                                decoration: BoxDecoration(
-                                  color: cardColor,
-                                  borderRadius: BorderRadius.circular(14),
-                                  border: Border.all(color: borderColor),
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: cardColor,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: borderColor),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: statusColor.withOpacity(0.1),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Icon(
+                                    status == 'present'
+                                        ? Icons.check_circle_outline
+                                        : status == 'condoned'
+                                        ? Icons.info_outline
+                                        : Icons.cancel_outlined,
+                                    color: statusColor,
+                                    size: 20,
+                                  ),
                                 ),
-                                child: Row(
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        subject?['code'] ?? 'Unknown',
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w700,
+                                          color: textColor,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        '$entryTime → $exitTime',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: subTextColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
+                                    Text(
+                                      date,
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: subTextColor,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
                                     Container(
-                                      width: 40,
-                                      height: 40,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 2,
+                                      ),
                                       decoration: BoxDecoration(
-                                        color:
-                                            statusColor.withOpacity(0.1),
-                                        borderRadius:
-                                            BorderRadius.circular(10),
+                                        color: statusColor.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(6),
                                       ),
-                                      child: Icon(
-                                        status == 'present'
-                                            ? Icons.check_circle_outline
-                                            : status == 'condoned'
-                                                ? Icons.info_outline
-                                                : Icons.cancel_outlined,
-                                        color: statusColor,
-                                        size: 20,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            subject?['code'] ?? 'Unknown',
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w700,
-                                              color: textColor,
-                                            ),
-                                          ),
-                                          const SizedBox(height: 2),
-                                          Text(
-                                            '$entryTime → $exitTime',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              color: subTextColor,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.end,
-                                      children: [
-                                        Text(
-                                          date,
-                                          style: TextStyle(
-                                            fontSize: 11,
-                                            color: subTextColor,
-                                          ),
+                                      child: Text(
+                                        status.toUpperCase(),
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: statusColor,
+                                          fontWeight: FontWeight.w700,
                                         ),
-                                        const SizedBox(height: 4),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8, vertical: 2),
-                                          decoration: BoxDecoration(
-                                            color: statusColor
-                                                .withOpacity(0.1),
-                                            borderRadius:
-                                                BorderRadius.circular(6),
-                                          ),
-                                          child: Text(
-                                            status.toUpperCase(),
-                                            style: TextStyle(
-                                              fontSize: 10,
-                                              color: statusColor,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                                      ),
                                     ),
                                   ],
                                 ),
-                              );
-                            },
-                          ),
-                        ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
             ),
           ],
         ),
@@ -1045,20 +1307,21 @@ class _LeaveTabState extends State<_LeaveTab> {
                     decoration: InputDecoration(
                       labelText: 'Subject',
                       filled: true,
-                      fillColor:
-                          isDark ? AppTheme.darkBg : AppTheme.lightBg,
+                      fillColor: isDark ? AppTheme.darkBg : AppTheme.lightBg,
                       border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                    dropdownColor:
-                        isDark ? AppTheme.darkCard : AppTheme.lightSurface,
+                    dropdownColor: isDark
+                        ? AppTheme.darkCard
+                        : AppTheme.lightSurface,
                     style: TextStyle(
-                        color:
-                            isDark ? AppTheme.darkText : AppTheme.lightText),
+                      color: isDark ? AppTheme.darkText : AppTheme.lightText,
+                    ),
                     items: subjects.map<DropdownMenuItem<String>>((s) {
                       return DropdownMenuItem(
                         value: s['id'].toString(),
-                        child: Text(s['code']),
+                        child: Text('${s['code']} - ${s['name']}'),
                       );
                     }).toList(),
                     onChanged: (val) =>
@@ -1073,26 +1336,32 @@ class _LeaveTabState extends State<_LeaveTab> {
                     decoration: InputDecoration(
                       labelText: 'Leave Type',
                       filled: true,
-                      fillColor:
-                          isDark ? AppTheme.darkBg : AppTheme.lightBg,
+                      fillColor: isDark ? AppTheme.darkBg : AppTheme.lightBg,
                       border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                    dropdownColor:
-                        isDark ? AppTheme.darkCard : AppTheme.lightSurface,
+                    dropdownColor: isDark
+                        ? AppTheme.darkCard
+                        : AppTheme.lightSurface,
                     style: TextStyle(
-                        color:
-                            isDark ? AppTheme.darkText : AppTheme.lightText),
+                      color: isDark ? AppTheme.darkText : AppTheme.lightText,
+                    ),
                     items: const [
                       DropdownMenuItem(
-                          value: 'medical', child: Text('Medical')),
+                        value: 'medical',
+                        child: Text('Medical'),
+                      ),
                       DropdownMenuItem(
-                          value: 'general', child: Text('General')),
+                        value: 'general',
+                        child: Text('General'),
+                      ),
                       DropdownMenuItem(
-                          value: 'emergency', child: Text('Emergency')),
+                        value: 'emergency',
+                        child: Text('Emergency'),
+                      ),
                     ],
-                    onChanged: (val) =>
-                        setModalState(() => leaveType = val!),
+                    onChanged: (val) => setModalState(() => leaveType = val!),
                   ),
 
                   const SizedBox(height: 16),
@@ -1102,14 +1371,14 @@ class _LeaveTabState extends State<_LeaveTab> {
                     decoration: InputDecoration(
                       labelText: 'Reason',
                       filled: true,
-                      fillColor:
-                          isDark ? AppTheme.darkBg : AppTheme.lightBg,
+                      fillColor: isDark ? AppTheme.darkBg : AppTheme.lightBg,
                       border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12)),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
                     style: TextStyle(
-                        color:
-                            isDark ? AppTheme.darkText : AppTheme.lightText),
+                      color: isDark ? AppTheme.darkText : AppTheme.lightText,
+                    ),
                     maxLines: 3,
                     onChanged: (val) => reason = val,
                   ),
@@ -1127,14 +1396,15 @@ class _LeaveTabState extends State<_LeaveTab> {
                           await Supabase.instance.client
                               .from('leave_applications')
                               .insert({
-                            'student_id': userId,
-                            'subject_id': selectedSubjectId,
-                            'leave_date': DateFormat('yyyy-MM-dd')
-                                .format(selectedDate),
-                            'reason': reason,
-                            'leave_type': leaveType,
-                            'status': 'pending',
-                          });
+                                'student_id': userId,
+                                'subject_id': selectedSubjectId,
+                                'leave_date': DateFormat(
+                                  'yyyy-MM-dd',
+                                ).format(selectedDate),
+                                'reason': reason,
+                                'leave_type': leaveType,
+                                'status': 'pending',
+                              });
                           if (!mounted) return;
                           Navigator.pop(context);
                           _loadLeaves();
@@ -1145,7 +1415,13 @@ class _LeaveTabState extends State<_LeaveTab> {
                             ),
                           );
                         } catch (e) {
-                          // handle error
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error: ${e.toString()}'),
+                              backgroundColor: AppTheme.error,
+                            ),
+                          );
                         }
                       },
                       child: const Text('Submit Application'),
@@ -1165,8 +1441,9 @@ class _LeaveTabState extends State<_LeaveTab> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? AppTheme.darkBg : AppTheme.lightBg;
     final textColor = isDark ? AppTheme.darkText : AppTheme.lightText;
-    final subTextColor =
-        isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary;
+    final subTextColor = isDark
+        ? AppTheme.darkTextSecondary
+        : AppTheme.lightTextSecondary;
     final cardColor = isDark ? AppTheme.darkCard : AppTheme.lightSurface;
     final borderColor = isDark ? AppTheme.darkBorder : AppTheme.lightBorder;
 
@@ -1176,8 +1453,10 @@ class _LeaveTabState extends State<_LeaveTab> {
         onPressed: _applyLeave,
         backgroundColor: AppTheme.primary,
         icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text('Apply Leave',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+        label: const Text(
+          'Apply Leave',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        ),
       ),
       body: SafeArea(
         child: Column(
@@ -1198,111 +1477,118 @@ class _LeaveTabState extends State<_LeaveTab> {
             Expanded(
               child: _isLoading
                   ? const Center(
-                      child:
-                          CircularProgressIndicator(color: AppTheme.primary))
+                      child: CircularProgressIndicator(color: AppTheme.primary),
+                    )
                   : _leaves.isEmpty
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.event_note_outlined,
-                                  color: subTextColor, size: 48),
-                              const SizedBox(height: 12),
-                              Text('No leave applications yet',
-                                  style: TextStyle(color: subTextColor)),
-                            ],
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.event_note_outlined,
+                            color: subTextColor,
+                            size: 48,
                           ),
-                        )
-                      : RefreshIndicator(
-                          onRefresh: _loadLeaves,
-                          color: AppTheme.primary,
-                          child: ListView.builder(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20),
-                            itemCount: _leaves.length,
-                            itemBuilder: (context, index) {
-                              final leave = _leaves[index];
-                              final subject = leave['subjects'];
-                              final status = leave['status'] ?? 'pending';
-                              final statusColor = status == 'approved'
-                                  ? AppTheme.success
-                                  : status == 'rejected'
-                                      ? AppTheme.error
-                                      : AppTheme.warning;
+                          const SizedBox(height: 12),
+                          Text(
+                            'No leave applications yet',
+                            style: TextStyle(color: subTextColor),
+                          ),
+                        ],
+                      ),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: _loadLeaves,
+                      color: AppTheme.primary,
+                      child: ListView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        itemCount: _leaves.length,
+                        itemBuilder: (context, index) {
+                          final leave = _leaves[index];
+                          final subject = leave['subjects'];
+                          final status = leave['status'] ?? 'pending';
+                          final statusColor = status == 'approved'
+                              ? AppTheme.success
+                              : status == 'rejected'
+                              ? AppTheme.error
+                              : AppTheme.warning;
 
-                              return Container(
-                                margin: const EdgeInsets.only(bottom: 10),
-                                padding: const EdgeInsets.all(16),
-                                decoration: BoxDecoration(
-                                  color: cardColor,
-                                  borderRadius: BorderRadius.circular(14),
-                                  border: Border.all(color: borderColor),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: cardColor,
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: borderColor),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
                                   children: [
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            subject?['code'] ?? 'Unknown',
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w700,
-                                              color: textColor,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10, vertical: 4),
-                                          decoration: BoxDecoration(
-                                            color: statusColor
-                                                .withOpacity(0.1),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                          ),
-                                          child: Text(
-                                            status.toUpperCase(),
-                                            style: TextStyle(
-                                              color: statusColor,
-                                              fontSize: 11,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      leave['reason'] ?? '',
-                                      style: TextStyle(
-                                          color: subTextColor, fontSize: 13),
-                                    ),
-                                    if (leave['admin_note'] != null) ...[
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        'Note: ${leave['admin_note']}',
+                                    Expanded(
+                                      child: Text(
+                                        subject?['code'] ?? 'Unknown',
                                         style: TextStyle(
-                                          color: AppTheme.primary,
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w500,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700,
+                                          color: textColor,
                                         ),
                                       ),
-                                    ],
-                                    const SizedBox(height: 6),
-                                    Text(
-                                      'Date: ${leave['leave_date'] ?? ''}  •  Type: ${leave['leave_type'] ?? ''}',
-                                      style: TextStyle(
-                                          color: subTextColor, fontSize: 12),
+                                    ),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: statusColor.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        status.toUpperCase(),
+                                        style: TextStyle(
+                                          color: statusColor,
+                                          fontSize: 11,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ),
-                              );
-                            },
-                          ),
-                        ),
+                                const SizedBox(height: 6),
+                                Text(
+                                  leave['reason'] ?? '',
+                                  style: TextStyle(
+                                    color: subTextColor,
+                                    fontSize: 13,
+                                  ),
+                                ),
+                                if (leave['admin_note'] != null) ...[
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    'Note: ${leave['admin_note']}',
+                                    style: TextStyle(
+                                      color: AppTheme.primary,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                                const SizedBox(height: 6),
+                                Text(
+                                  'Date: ${leave['leave_date'] ?? ''}  •  Type: ${leave['leave_type'] ?? ''}',
+                                  style: TextStyle(
+                                    color: subTextColor,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
             ),
           ],
         ),
@@ -1328,8 +1614,9 @@ class _ProfileTab extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final bg = isDark ? AppTheme.darkBg : AppTheme.lightBg;
     final textColor = isDark ? AppTheme.darkText : AppTheme.lightText;
-    final subTextColor =
-        isDark ? AppTheme.darkTextSecondary : AppTheme.lightTextSecondary;
+    final subTextColor = isDark
+        ? AppTheme.darkTextSecondary
+        : AppTheme.lightTextSecondary;
     final cardColor = isDark ? AppTheme.darkCard : AppTheme.lightSurface;
     final borderColor = isDark ? AppTheme.darkBorder : AppTheme.lightBorder;
 
@@ -1381,8 +1668,7 @@ class _ProfileTab extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              Text(uid,
-                  style: TextStyle(color: subTextColor, fontSize: 14)),
+              Text(uid, style: TextStyle(color: subTextColor, fontSize: 14)),
 
               const SizedBox(height: 24),
 
@@ -1396,21 +1682,70 @@ class _ProfileTab extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    _infoRow(Icons.email_outlined, 'Email', email,
-                        textColor, subTextColor),
+                    _infoRow(
+                      Icons.email_outlined,
+                      'Email',
+                      email,
+                      textColor,
+                      subTextColor,
+                    ),
                     _divider(borderColor),
-                    _infoRow(Icons.school_outlined, 'Department', dept,
-                        textColor, subTextColor),
+                    _infoRow(
+                      Icons.school_outlined,
+                      'Department',
+                      dept,
+                      textColor,
+                      subTextColor,
+                    ),
                     _divider(borderColor),
-                    _infoRow(Icons.group_outlined, 'Session', section,
-                        textColor, subTextColor),
+                    _infoRow(
+                      Icons.group_outlined,
+                      'Session',
+                      section,
+                      textColor,
+                      subTextColor,
+                    ),
                     _divider(borderColor),
-                    _infoRow(Icons.science_outlined, 'Lab Group', labGroup,
-                        textColor, subTextColor),
+                    _infoRow(
+                      Icons.science_outlined,
+                      'Lab Group',
+                      labGroup,
+                      textColor,
+                      subTextColor,
+                    ),
                     _divider(borderColor),
-                    _infoRow(Icons.phone_outlined, 'Phone', phone,
-                        textColor, subTextColor),
+                    _infoRow(
+                      Icons.phone_outlined,
+                      'Phone',
+                      phone,
+                      textColor,
+                      subTextColor,
+                    ),
                   ],
+                ),
+              ),
+
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (_) =>
+                          ChangePasswordDialog(isDarkMode: isDarkMode),
+                    );
+                  },
+                  icon: const Icon(Icons.lock_outline),
+                  label: const Text('Change Password'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: AppTheme.primary,
+                    side: const BorderSide(color: AppTheme.primary),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
                 ),
               ),
 
@@ -1464,23 +1799,28 @@ class _ProfileTab extends StatelessWidget {
     );
   }
 
-  Widget _infoRow(IconData icon, String label, String value, Color textColor,
-      Color subTextColor) {
+  Widget _infoRow(
+    IconData icon,
+    String label,
+    String value,
+    Color textColor,
+    Color subTextColor,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         children: [
           Icon(icon, size: 18, color: AppTheme.primary),
           const SizedBox(width: 12),
-          Text(label,
-              style: TextStyle(color: subTextColor, fontSize: 13)),
+          Text(label, style: TextStyle(color: subTextColor, fontSize: 13)),
           const Spacer(),
           Text(
             value,
             style: TextStyle(
-                color: textColor,
-                fontSize: 13,
-                fontWeight: FontWeight.w600),
+              color: textColor,
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
@@ -1497,11 +1837,14 @@ class _ProfileTab extends StatelessWidget {
   }) {
     return ListTile(
       leading: Icon(icon, color: textColor, size: 20),
-      title: Text(label,
-          style: TextStyle(
-              color: textColor,
-              fontSize: 14,
-              fontWeight: FontWeight.w500)),
+      title: Text(
+        label,
+        style: TextStyle(
+          color: textColor,
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
       trailing: Icon(Icons.chevron_right, color: textColor, size: 20),
       onTap: onTap,
     );

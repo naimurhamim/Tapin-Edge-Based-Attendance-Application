@@ -1,21 +1,22 @@
-#include <ESP8266WiFi.h>
-#include <ESP8266HTTPClient.h>
-#include <WiFiClientSecure.h>
-#include <SPI.h>
-#include <MFRC522.h>
 #include <ArduinoJson.h>
+#include <ESP8266HTTPClient.h>
+#include <ESP8266WiFi.h>
+#include <MFRC522.h>
+#include <SPI.h>
+#include <WiFiClientSecure.h>
 
 // WiFi
-const char* ssid = "naim";
-const char* password = "naim1526";
+const char *ssid = "naim";
+const char *password = "naim1526";
 
 // Supabase
-const char* functionUrl = "https://nqmzpjaiphcfrnnlxhxv.supabase.co/functions/v1/mark-attendance";
-const char* anonKey = "sb_publishable_z2KxRFk5y0UQM0kNxsIJRQ_dVwFg2XN";
+const char *functionUrl =
+    "https://nqmzpjaiphcfrnnlxhxv.supabase.co/rest/v1/rpc/process_rfid_scan";
+const char *anonKey = "sb_publishable_z2KxRFk5y0UQM0kNxsIJRQ_dVwFg2XN";
 
 // RC522 Pins
-#define SS_PIN  15  // D8
-#define RST_PIN 0   // D3
+#define SS_PIN 15 // D8
+#define RST_PIN 0 // D3
 
 MFRC522 rfid(SS_PIN, RST_PIN);
 
@@ -48,7 +49,8 @@ void loop() {
   // UID read
   String uid = "";
   for (byte i = 0; i < rfid.uid.size; i++) {
-    if (rfid.uid.uidByte[i] < 0x10) uid += "0";
+    if (rfid.uid.uidByte[i] < 0x10)
+      uid += "0";
     uid += String(rfid.uid.uidByte[i], HEX);
   }
   uid.toUpperCase();
@@ -80,7 +82,7 @@ void sendToSupabase(String uid) {
   http.addHeader("Content-Type", "application/json");
   http.addHeader("apikey", anonKey);
 
-  String body = "{\"rfid_uid\":\"" + uid + "\"}";
+  String body = "{\"p_rfid_uid\":\"" + uid + "\"}";
   Serial.print("📤 Sending: ");
   Serial.println(body);
 
@@ -97,19 +99,30 @@ void sendToSupabase(String uid) {
     DeserializationError error = deserializeJson(doc, response);
 
     if (!error) {
-      bool success = doc["success"];
-      const char* message = doc["message"];
-      const char* student = doc["student"] | "";
+      const char *status = doc["status"] | "error";
+      const char *name = doc["name"] | "";
+      const char *message = doc["message"] | "";
+      const char *course = doc["course"] | "";
+      const char *tap_time = doc["tap_time"] | "";
 
-      if (success) {
-        Serial.println("✅ SUCCESS!");
+      if (strcmp(status, "known") == 0) {
+        Serial.println("✅ SUCCESS! Assigned RFID.");
+        Serial.print("👤 Student: ");
+        Serial.println(name);
+        Serial.print("📚 Course: ");
+        Serial.println(course);
+        Serial.print("🕒 Tap Time: ");
+        Serial.println(tap_time);
+        Serial.print("💬 Message: ");
+        Serial.println(message);
+      } else if (strcmp(status, "unknown") == 0) {
+        Serial.println("⚠️  UNASSIGNED RFID Logged!");
+        Serial.print("💬 Message: ");
+        Serial.println(message);
       } else {
-        Serial.println("⚠️  FAILED!");
+        Serial.println("❌ ERROR or Unknown Response");
+        Serial.println(response);
       }
-      Serial.print("👤 Student: ");
-      Serial.println(student);
-      Serial.print("💬 Message: ");
-      Serial.println(message);
     } else {
       Serial.println(response);
     }
