@@ -13,134 +13,157 @@ const STEPS = [
   {
     label: "Authentication Flow",
     titleHTML: "Login <span>Screen</span>",
-    image: "assets/screenshots/login-empty.jpg",
+    image: "assets/screenshots/authPage/login.jpg",
     leftNotes: [
       { color: "yellow", rot: -2.5, html: "Email + password<br>auth via Supabase.<br>Role auto-detected<br>on login <i data-lucide=\"key\" class=\"inline-icon\"></i>" },
       { color: "orange", rot: 1.8,  html: "<i data-lucide=\"moon\" class=\"inline-icon\"></i> Dark Mode toggle<br>persisted via<br><strong>shared_preferences</strong>" }
     ],
     rightNotes: [
-      { color: "blue", rot: -1.4, html: "Admin accounts<br>pre-seeded in DB.<br>No self-registration<br>for admins <i data-lucide=\"lock\" class=\"inline-icon\"></i>" }
+      { color: "blue", rot: -1.4, html: "Intelligent Routing!<br>Admins, Teachers,<br>&amp; Students go to<br>different dashboards <i data-lucide=\"route\" class=\"inline-icon\"></i>" }
     ]
   },
   {
     label: "Authentication Flow",
     titleHTML: "Create <span>Account</span>",
-    image: "assets/screenshots/register.jpg",
+    image: "assets/screenshots/authPage/student-register.jpg",
     leftNotes: [
-      { color: "pink", rot: 2.0, html: "<strong>Intelligent Routing</strong><br>Last 3 digits of<br>University ID decides<br>your lab group <i data-lucide=\"clipboard-list\" class=\"inline-icon\"></i>" }
+      { color: "pink", rot: 2.0, html: "<strong>Intelligent Grouping</strong><br>Last 3 digits of<br>University ID decides<br>your lab group <i data-lucide=\"clipboard-list\" class=\"inline-icon\"></i>" }
     ],
     rightNotes: [
       { color: "green",  rot: -1.2, html: "≤ 025 → <strong>Lab G1</strong><br>&gt; 025 → <strong>Lab G2</strong><br>Auto-assigned ✓" },
-      { color: "yellow", rot:  2.4, html: "Dept (IRE) &amp; Session<br>(2021-22) auto-filled<br>from University ID" }
+      { color: "yellow", rot:  2.4, html: "Also supports<br>Teacher Registration<br>with Designations!" }
+    ]
+  },
+  {
+    label: "Admin View",
+    titleHTML: "Admin <span>Dashboard</span>",
+    image: "assets/screenshots/AdminPanel/admin-dashboard.jpg",
+    leftNotes: [
+      { color: "yellow", rot: -2.8, html: "<i data-lucide=\"users\" class=\"inline-icon\"></i> <strong>Real-time Stats</strong><br>Total students,<br>Today's present,<br>&amp; Pending leaves" }
+    ],
+    rightNotes: [
+      { color: "blue",  rot: -1.4, html: "<i data-lucide=\"calendar\" class=\"inline-icon\"></i> <strong>Today's Classes</strong><br>Live view of<br>'class_schedules'<br>where is_active=true" }
+    ]
+  },
+  {
+    label: "Admin View",
+    titleHTML: "Location <span>Security</span>",
+    image: "assets/screenshots/AdminPanel/admin-geofence.jpg",
+    leftNotes: [
+      { color: "pink", rot: -2.0, html: "<strong>Geofencing!</strong><br>Admin sets the<br>Latitude, Longitude,<br>&amp; Radius <i data-lucide=\"map-pin\" class=\"inline-icon\"></i>" }
+    ],
+    rightNotes: [
+      { color: "orange", rot:  1.5, html: "Secures QR scans!<br>Students must be<br>within the classroom<br>to mark attendance <i data-lucide=\"shield-check\" class=\"inline-icon\"></i>" }
+    ]
+  },
+  {
+    label: "Critical Admin Operations",
+    titleHTML: "RFID <span>Assignment</span>",
+    image: "assets/screenshots/AdminPanel/admin-student-details.jpg",
+    leftNotes: [
+      { color: "blue", rot: -2.5, html: "<i data-lucide=\"radio\" class=\"inline-icon\"></i> <strong>RFID UID Link</strong><br>Admin MUST assign<br>physical RFID UID<br>to each student!" }
+    ],
+    rightNotes: [
+      { color: "green", rot:  1.8, html: "Without this link,<br>Edge Functions<br><strong>cannot</strong> process<br>RFID taps <i data-lucide=\"alert-circle\" class=\"inline-icon\"></i>" }
+    ]
+  },
+  {
+    label: "Teacher Hub",
+    titleHTML: "Teacher <span>Dashboard</span>",
+    image: "assets/screenshots/TeacherPanel/teacher-dashboard.jpg",
+    leftNotes: [
+      { color: "purple", rot: -2.0, html: "Dedicated panel<br>for teachers to<br>manage their classes<br>&amp; students <i data-lucide=\"graduation-cap\" class=\"inline-icon\"></i>" }
+    ],
+    rightNotes: [
+      { color: "yellow", rot:  1.4, html: "Quick overview of<br>today's classes and<br>actionable pending<br>leave requests <i data-lucide=\"clipboard-check\" class=\"inline-icon\"></i>" }
+    ]
+  },
+  {
+    label: "Teacher Hub",
+    titleHTML: "Course <span>Selection</span>",
+    image: "assets/screenshots/TeacherPanel/teacher-course-selection.jpg",
+    leftNotes: [
+      { color: "green", rot: -1.5, html: "<strong>Teacher Courses</strong><br>Select taught courses<br>from the active<br>semester subjects <i data-lucide=\"book\" class=\"inline-icon\"></i>" }
+    ],
+    rightNotes: [
+      { color: "pink", rot:  2.1, html: "Saved persistently!<br>Filters the classes<br>shown in the<br>dashboard <i data-lucide=\"filter\" class=\"inline-icon\"></i>" }
+    ]
+  },
+  {
+    label: "Teacher Hub",
+    titleHTML: "Attendance <span>Modes</span>",
+    image: "assets/screenshots/TeacherPanel/teacher-class-attendance.jpg",
+    leftNotes: [
+      { color: "yellow", rot: -2.2, html: "Total Flexibility!<br>Choose between<br><strong>Manual</strong> or <strong>QR</strong><br>Attendance modes <i data-lucide=\"sliders\" class=\"inline-icon\"></i>" }
+    ],
+    rightNotes: [
+      { color: "blue", rot:  1.7, html: "Select lab groups<br>for targeted<br>attendance tracking <i data-lucide=\"users\" class=\"inline-icon\"></i>" }
+    ]
+  },
+  {
+    label: "Dynamic Features",
+    titleHTML: "QR <span>Attendance</span>",
+    image: "assets/screenshots/TeacherPanel/teacher-qr-attendance.jpg",
+    leftNotes: [
+      { color: "orange", rot: -2.5, html: "<strong>Smart QR Codes</strong><br>Auto-generates a<br>secure QR code for<br>the selected class <i data-lucide=\"qr-code\" class=\"inline-icon\"></i>" }
+    ],
+    rightNotes: [
+      { color: "green", rot:  1.5, html: "Live updates!<br>Watch the scanned<br>student count increase<br>in real-time <i data-lucide=\"zap\" class=\"inline-icon\"></i>" }
+    ]
+  },
+  {
+    label: "Dynamic Features",
+    titleHTML: "Student <span>Analytics</span>",
+    image: "assets/screenshots/TeacherPanel/teacher-student-analytics.jpg",
+    leftNotes: [
+      { color: "blue", rot: -1.8, html: "Detailed stats!<br>Dive deep into<br>a single student's<br>performance <i data-lucide=\"pie-chart\" class=\"inline-icon\"></i>" }
+    ],
+    rightNotes: [
+      { color: "pink", rot:  2.3, html: "<strong>Risk Warnings</strong><br>Instant red alerts<br>for students below<br>the 90% threshold! <i data-lucide=\"alert-triangle\" class=\"inline-icon\"></i>" }
+    ]
+  },
+  {
+    label: "Data Management",
+    titleHTML: "Export <span>Reports</span>",
+    image: "assets/screenshots/TeacherPanel/teacher-attendance-report.jpg",
+    leftNotes: [
+      { color: "yellow", rot: -2.0, html: "<strong>Instant Export</strong><br>Download full class<br>attendance reports in<br>PDF or Excel format <i data-lucide=\"download\" class=\"inline-icon\"></i>" }
+    ],
+    rightNotes: [
+      { color: "purple", rot:  1.6, html: "Perfect for<br>university records<br>&amp; official grade<br>submissions <i data-lucide=\"file-text\" class=\"inline-icon\"></i>" }
     ]
   },
   {
     label: "Student View",
     titleHTML: "Home <span>Dashboard</span>",
-    image: "assets/screenshots/student-dashboard.jpg",
+    image: "assets/screenshots/StudentPanel/student-dashboard.jpg",
     leftNotes: [
-      { color: "yellow", rot: -2.8, html: "Overall attendance %<br>Circular indicator —<br>turns <i data-lucide=\"alert-triangle\" class=\"inline-icon\" style=\"color:red\"></i> below<br><strong>90% threshold!</strong>" },
-      { color: "pink",   rot:  2.0, html: "<i data-lucide=\"circle\" fill=\"currentColor\" style=\"color:#2563EB\" class=\"inline-icon\"></i> Blue = Theory<br><i data-lucide=\"circle\" fill=\"currentColor\" style=\"color:#06B6D4\" class=\"inline-icon\"></i> Cyan = Lab" }
+      { color: "green", rot: -2.8, html: "Overall attendance %<br>Circular indicator —<br>turns <i data-lucide=\"alert-triangle\" class=\"inline-icon\" style=\"color:red\"></i> below<br><strong>90% threshold!</strong>" }
     ],
     rightNotes: [
-      { color: "blue",  rot: -1.4, html: "<strong>Context-Aware Feed</strong><br>Today's classes only,<br>filtered by your<br>Lab Group (G1/G2) <i data-lucide=\"check\" class=\"inline-icon\"></i>" },
-      { color: "green", rot:  2.4, html: "<i data-lucide=\"calendar\" class=\"inline-icon\"></i> Sorted by time.<br>Bottom nav for<br>quick section access!" }
+      { color: "blue",  rot:  2.4, html: "<strong>Context-Aware Feed</strong><br>Today's classes only,<br>filtered by your<br>Lab Group (G1/G2) <i data-lucide=\"check\" class=\"inline-icon\"></i>" }
     ]
   },
   {
-    label: "Attendance Tracking",
-    titleHTML: "Per-Subject <span>Attendance</span>",
-    image: "assets/screenshots/student-attendance.jpg",
-    leftNotes: [
-      { color: "green", rot: -2.5, html: "<strong>The 90% Rule</strong> <i data-lucide=\"bar-chart\" class=\"inline-icon\"></i><br>Minimum 90% per<br>subject = full<br><strong>30/30 marks!</strong>" }
-    ],
-    rightNotes: [
-      { color: "yellow", rot:  1.8, html: "Per-subject view:<br>Present / Absent /<br>Total counts<br>at a glance <i data-lucide=\"eye\" class=\"inline-icon\"></i>" },
-      { color: "orange", rot: -1.5, html: "Color-coded bars<br>for instant visual<br>feedback <i data-lucide=\"trending-up\" class=\"inline-icon\"></i>" }
-    ]
-  },
-  {
-    label: "Attendance Tracking",
+    label: "Student View",
     titleHTML: "Attendance <span>History</span>",
-    image: "assets/screenshots/student-history.jpg",
+    image: "assets/screenshots/StudentPanel/student-history.jpg",
     leftNotes: [
-      { color: "blue", rot: -2.0, html: "<strong>Chronological Log</strong><br>Immutable entries<br>with exact Entry &amp;<br>Exit times (hh:mm a) <i data-lucide=\"clock\" class=\"inline-icon\"></i>" }
+      { color: "yellow", rot: -2.0, html: "<strong>Chronological Log</strong><br>Immutable entries<br>with exact Entry &amp;<br>Exit times (hh:mm a) <i data-lucide=\"clock\" class=\"inline-icon\"></i>" }
     ],
     rightNotes: [
-      { color: "purple", rot:  1.5, html: "<strong>PRESENT</strong> badge<br>in green = verified<br>attendance <i data-lucide=\"check-circle-2\" class=\"inline-icon\"></i>" },
-      { color: "pink",   rot: -1.8, html: "Date stored as<br>YYYY-MM-DD format<br>in Supabase DB <i data-lucide=\"calendar\" class=\"inline-icon\"></i>" }
+      { color: "pink",   rot:  1.5, html: "Supports both<br><strong>RFID Taps</strong> and<br><strong>QR Code</strong> scans!<br>Synced instantly <i data-lucide=\"refresh-cw\" class=\"inline-icon\"></i>" }
     ]
   },
   {
-    label: "Leave Management",
+    label: "Student View",
     titleHTML: "Leave <span>Application</span>",
-    image: "assets/screenshots/student-leave.jpg",
+    image: "assets/screenshots/StudentPanel/student-leave.jpg",
     leftNotes: [
-      { color: "yellow", rot: -2.5, html: "Select subject,<br>date &amp; reason.<br>Submit → Status:<br><strong>Pending</strong> <i data-lucide=\"file-edit\" class=\"inline-icon\"></i>" }
+      { color: "orange", rot: -2.5, html: "Select subject,<br>date &amp; reason.<br>Submit → Status:<br><strong>Pending</strong> <i data-lucide=\"file-edit\" class=\"inline-icon\"></i>" }
     ],
     rightNotes: [
-      { color: "orange", rot:  1.8, html: "Leave types:<br>• Medical<br>• General<br>• University Event" },
-      { color: "blue",   rot: -1.4, html: "Approved absences<br>count as<br><strong>PRESENT</strong> for<br>90% calculation! <i data-lucide=\"target\" class=\"inline-icon\"></i>" }
-    ]
-  },
-  {
-    label: "Leave Management — Admin",
-    titleHTML: "Pending <span>Requests</span>",
-    image: "assets/screenshots/admin-leave-pending.jpg",
-    leftNotes: [
-      { color: "pink", rot: -2.0, html: "Admin sees ALL<br>pending leave<br>requests from<br>students <i data-lucide=\"clipboard-list\" class=\"inline-icon\"></i>" }
-    ],
-    rightNotes: [
-      { color: "green",  rot:  1.5, html: "Approve → DB updates<br>to <strong>'Condoned'</strong><br>status instantly <i data-lucide=\"check-circle-2\" class=\"inline-icon\"></i>" },
-      { color: "yellow", rot: -1.8, html: "Student name, ID<br>&amp; reason visible<br>for each request <i data-lucide=\"eye\" class=\"inline-icon\"></i>" }
-    ]
-  },
-  {
-    label: "Leave Management — Admin",
-    titleHTML: "Approved <span>Leaves</span>",
-    image: "assets/screenshots/admin-leave-approved.jpg",
-    leftNotes: [
-      { color: "green", rot: -2.5, html: "<strong>APPROVED</strong> badge<br>shown in green.<br>Student's record<br>updated instantly <i data-lucide=\"check-circle-2\" class=\"inline-icon\"></i>" }
-    ],
-    rightNotes: [
-      { color: "blue", rot: 1.8, html: "Condoned absences<br>automatically count<br>as PRESENT in the<br>90% calculation <i data-lucide=\"bar-chart\" class=\"inline-icon\"></i>" }
-    ]
-  },
-  {
-    label: "Admin Panel",
-    titleHTML: "Admin <span>Dashboard</span>",
-    image: "assets/screenshots/admin-dashboard.jpg",
-    leftNotes: [
-      { color: "yellow", rot: -2.8, html: "<i data-lucide=\"users\" class=\"inline-icon\"></i> <strong>Total Students</strong><br>Filtered by<br>Dept (IRE),<br>Sec (2021-22)" },
-      { color: "orange", rot:  2.0, html: "<i data-lucide=\"hourglass\" class=\"inline-icon\"></i> <strong>Pending Leaves</strong><br>Live queue from<br>'leave_applications'" }
-    ],
-    rightNotes: [
-      { color: "blue",  rot: -1.4, html: "<i data-lucide=\"check-circle-2\" class=\"inline-icon\"></i> <strong>Today Present</strong><br>Real-time JOIN<br>of 'users' &amp;<br>'attendance_logs'" },
-      { color: "green", rot:  2.4, html: "<i data-lucide=\"book-open\" class=\"inline-icon\"></i> <strong>Today's Classes</strong><br>'class_schedules'<br>where is_active=true" }
-    ]
-  },
-  {
-    label: "Critical Admin Operations",
-    titleHTML: "Student <span>Management</span>",
-    image: "assets/screenshots/admin-students.jpg",
-    leftNotes: [
-      { color: "pink", rot: -2.0, html: "<i data-lucide=\"radio\" class=\"inline-icon\"></i> <strong>RFID UID Link</strong><br>Admin MUST assign<br>physical RFID UID<br>to each student!" }
-    ],
-    rightNotes: [
-      { color: "purple", rot:  1.5, html: "Without this link,<br>Edge Functions<br><strong>cannot</strong> process<br>RFID taps <i data-lucide=\"x-circle\" class=\"inline-icon\"></i>" },
-      { color: "yellow", rot: -1.8, html: "e.g. RFID UID:<br><strong>EBACC836</strong><br>linked to student<br>profile <i data-lucide=\"link\" class=\"inline-icon\"></i>" }
-    ]
-  },
-  {
-    label: "Critical Admin Operations",
-    titleHTML: "Class <span>Schedules</span>",
-    image: "assets/screenshots/admin-schedule.jpg",
-    leftNotes: [
-      { color: "blue", rot: -2.5, html: "Admin manages<br>all class timetables.<br>Sets active/inactive<br>status <i data-lucide=\"calendar\" class=\"inline-icon\"></i>" }
-    ],
-    rightNotes: [
-      { color: "green",  rot:  1.8, html: "Sat → Thu<br>Bangladesh Academic<br>Week logic<br>built-in <i data-lucide=\"check\" class=\"inline-icon\"></i>" },
-      { color: "orange", rot: -1.5, html: "is_active=true →<br>shown in Today's<br>Classes feed<br>for students <i data-lucide=\"smartphone\" class=\"inline-icon\"></i>" }
+      { color: "blue",   rot:  1.8, html: "Approved absences<br>count as<br><strong>PRESENT</strong> for<br>90% calculation! <i data-lucide=\"target\" class=\"inline-icon\"></i>" }
     ]
   }
 ];
