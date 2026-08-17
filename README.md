@@ -64,6 +64,10 @@ A Flutter-based IoT-integrated smart attendance management system for universiti
 | GND | GND | GND |
 | 3.3V | 3.3V | 3V3 |
 
+<div align="center">
+  <img src="docs/assets/CircuitDiagram.jpg" alt="Hardware Circuit Diagram" width="500" />
+</div>
+
 ### Arduino Code
 The NodeMCU sketch is located at:
 ```
@@ -135,24 +139,32 @@ For complete project documentation including all screen details, Supabase schema
 ### Authentication
 | Login | Student Register | Teacher Register |
 |:---:|:---:|:---:|
-| ![Login](docs/assets/screenshots/authPage/login.jpg) | ![Student Register](docs/assets/screenshots/authPage/student-register.jpg) | ![Teacher Register](docs/assets/screenshots/authPage/teacher-register.jpg) |
+| <img src="docs/assets/screenshots/authPage/login.jpg" width="250" /> | <img src="docs/assets/screenshots/authPage/student-register.jpg" width="250" /> | <img src="docs/assets/screenshots/authPage/teacher-register.jpg" width="250" /> |
 
 ### Teacher View
 | Dashboard | Course Selection | Class Attendance |
 |:---:|:---:|:---:|
-| ![Dashboard](docs/assets/screenshots/TeacherPanel/teacher-dashboard.jpg) | ![Course Selection](docs/assets/screenshots/TeacherPanel/teacher-course-selection.jpg) | ![Class Attendance](docs/assets/screenshots/TeacherPanel/teacher-class-attendance.jpg) |
+| <img src="docs/assets/screenshots/TeacherPanel/teacher-dashboard.jpg" width="250" /> | <img src="docs/assets/screenshots/TeacherPanel/teacher-course-selection.jpg" width="250" /> | <img src="docs/assets/screenshots/TeacherPanel/teacher-class-attendance.jpg" width="250" /> |
 | **Manual Attendance** | **QR Attendance** | **Student Analytics** |
-| ![Manual Attendance](docs/assets/screenshots/TeacherPanel/teacher-manual-attendance.jpg) | ![QR Attendance](docs/assets/screenshots/TeacherPanel/teacher-qr-attendance.jpg) | ![Student Analytics](docs/assets/screenshots/TeacherPanel/teacher-student-analytics.jpg) |
+| <img src="docs/assets/screenshots/TeacherPanel/teacher-manual-attendance.jpg" width="250" /> | <img src="docs/assets/screenshots/TeacherPanel/teacher-qr-attendance.jpg" width="250" /> | <img src="docs/assets/screenshots/TeacherPanel/teacher-student-analytics.jpg" width="250" /> |
+| **Export Reports** | **Teacher Students** | **Teacher Profile** |
+| <img src="docs/assets/screenshots/TeacherPanel/teacher-attendance-report.jpg" width="250" /> | <img src="docs/assets/screenshots/TeacherPanel/teacher-students.jpg" width="250" /> | <img src="docs/assets/screenshots/TeacherPanel/teacher-profile.jpg" width="250" /> |
 
 ### Student View
-| Dashboard | Attendance | History | Leave |
-|:---:|:---:|:---:|:---:|
-| ![Dashboard](docs/assets/screenshots/StudentPanel/student-dashboard.jpg) | ![Attendance](docs/assets/screenshots/StudentPanel/student-attendance.jpg) | ![History](docs/assets/screenshots/StudentPanel/student-history.jpg) | ![Leave](docs/assets/screenshots/StudentPanel/student-leave.jpg) |
+| Dashboard | Attendance | History |
+|:---:|:---:|:---:|
+| <img src="docs/assets/screenshots/StudentPanel/student-dashboard.jpg" width="250" /> | <img src="docs/assets/screenshots/StudentPanel/student-attendance.jpg" width="250" /> | <img src="docs/assets/screenshots/StudentPanel/student-history.jpg" width="250" /> |
+| **Leave** | **Profile** | |
+| <img src="docs/assets/screenshots/StudentPanel/student-leave.jpg" width="250" /> | <img src="docs/assets/screenshots/StudentPanel/student-profile.jpg" width="250" /> | |
 
 ### Admin View
-| Dashboard | Geofencing | Student Details | Leave Management | Add Schedule |
-|:---:|:---:|:---:|:---:|:---:|
-| ![Admin Dashboard](docs/assets/screenshots/AdminPanel/admin-dashboard.jpg) | ![Geofence](docs/assets/screenshots/AdminPanel/admin-geofence.jpg) | ![Student Details](docs/assets/screenshots/AdminPanel/admin-student-details.jpg) | ![Leave Management](docs/assets/screenshots/AdminPanel/admin-leave.jpg) | ![Add Schedule](docs/assets/screenshots/AdminPanel/admin-add-schedule.jpg) |
+| Dashboard | Geofencing | Leave Management |
+|:---:|:---:|:---:|
+| <img src="docs/assets/screenshots/AdminPanel/admin-dashboard.jpg" width="250" /> | <img src="docs/assets/screenshots/AdminPanel/admin-geofence.jpg" width="250" /> | <img src="docs/assets/screenshots/AdminPanel/admin-leave.jpg" width="250" /> |
+| **Student Details** | **All Students** | **Unassigned Scans** |
+| <img src="docs/assets/screenshots/AdminPanel/admin-student-details.jpg" width="250" /> | <img src="docs/assets/screenshots/AdminPanel/admin-students.jpg" width="250" /> | <img src="docs/assets/screenshots/AdminPanel/admin-unassigned-scans.jpg" width="250" /> |
+| **Add Schedule** | **View Schedules** | **Admin Profile** |
+| <img src="docs/assets/screenshots/AdminPanel/admin-add-schedule.jpg" width="250" /> | <img src="docs/assets/screenshots/AdminPanel/admin-schedule.jpg" width="250" /> | <img src="docs/assets/screenshots/AdminPanel/admin-profile.jpg" width="250" /> |
 
 </div>
 
