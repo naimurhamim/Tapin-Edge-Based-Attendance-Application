@@ -22,9 +22,9 @@
           |_|             
 ```
 
-# 🎓 TapIn — Smart Attendance System
+<h1 align="center">🎓 TapIn — Smart Attendance System</h1>
 
-### *IoT-Integrated Real-Time University Attendance — Powered by Flutter + Supabase*
+<h3 align="center"><em>IoT-Integrated Real-Time University Attendance — Powered by Flutter + Supabase</em></h3>
 
 <br/>
 
@@ -35,7 +35,7 @@
 
 <br/>
 
-[![Made by](https://img.shields.io/badge/Made%20by-MD%20Naimur%20Rashid-7d3c98?style=flat-square)](https://github.com/naimurhamim)
+[![Made by](https://img.shields.io/badge/Made%20by-Naimur%20&%20Sourav-7d3c98?style=flat-square)](https://github.com/naimurhamim)
 [![Year](https://img.shields.io/badge/Year-2026-7d3c98?style=flat-square)](#)
 [![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)](#license)
 [![Platform](https://img.shields.io/badge/Platform-Android%20%7C%20iOS%20%7C%20IoT-blue?style=flat-square)](#)
@@ -191,13 +191,13 @@ flutter build apk --release
 | <img src="docs/assets/screenshots/StudentPanel/student-leave.jpg" width="250" /> | <img src="docs/assets/screenshots/StudentPanel/student-profile.jpg" width="250" /> | |
 
 ### Admin View
-| Dashboard | Geofencing | Leave Management |
+| Dashboard | Geofencing | Student Details |
 |:---:|:---:|:---:|
-| <img src="docs/assets/screenshots/AdminPanel/admin-dashboard.jpg" width="250" /> | <img src="docs/assets/screenshots/AdminPanel/admin-geofence.jpg" width="250" /> | <img src="docs/assets/screenshots/AdminPanel/admin-leave.jpg" width="250" /> |
-| **Student Details** | **All Students** | **Unassigned Scans** |
-| <img src="docs/assets/screenshots/AdminPanel/admin-student-details.jpg" width="250" /> | <img src="docs/assets/screenshots/AdminPanel/admin-students.jpg" width="250" /> | <img src="docs/assets/screenshots/AdminPanel/admin-unassigned-scans.jpg" width="250" /> |
-| **Add Schedule** | **View Schedules** | **Admin Profile** |
-| <img src="docs/assets/screenshots/AdminPanel/admin-add-schedule.jpg" width="250" /> | <img src="docs/assets/screenshots/AdminPanel/admin-schedule.jpg" width="250" /> | <img src="docs/assets/screenshots/AdminPanel/admin-profile.jpg" width="250" /> |
+| <img src="docs/assets/screenshots/AdminPanel/admin-dashboard.jpg" width="250" /> | <img src="docs/assets/screenshots/AdminPanel/admin-geofence.jpg" width="250" /> | <img src="docs/assets/screenshots/AdminPanel/admin-student-details.jpg" width="250" /> |
+| **All Students** | **Unassigned Scans** | **Add Schedule** |
+| <img src="docs/assets/screenshots/AdminPanel/admin-students.jpg" width="250" /> | <img src="docs/assets/screenshots/AdminPanel/admin-unassigned-scans.jpg" width="250" /> | <img src="docs/assets/screenshots/AdminPanel/admin-add-schedule.jpg" width="250" /> |
+| **View Schedules** | **Admin Profile** | |
+| <img src="docs/assets/screenshots/AdminPanel/admin-schedule.jpg" width="250" /> | <img src="docs/assets/screenshots/AdminPanel/admin-profile.jpg" width="250" /> | |
 
 </div>
 
