@@ -218,11 +218,9 @@ Licensed under the **MIT License** — see [LICENSE](LICENSE) for details.
 | <img src="docs/assets/presenters/Naimur_Rashid.jpg" width="120" style="border-radius: 50%;" /> | <img src="docs/assets/presenters/Sourav_Chakraborty.png" width="120" style="border-radius: 50%;" /> |
 | **MD Naimur Rashid** | **Sourav Chakraborty** |
 | *Department of IoT and Robotics Engineering*<br/>*University of Frontier Technology* | *Department of IoT and Robotics Engineering*<br/>*University of Frontier Technology* |
-| [![Website](https://img.shields.io/badge/Website-naimurrashid.dev-2563EB?style=flat-square&logo=globe&logoColor=white)](https://naimurrashid.dev/)<br/>[![GitHub](https://img.shields.io/badge/GitHub-naimurhamim-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/naimurhamim) | |
+| [![Website](https://img.shields.io/badge/Website-naimurrashid.dev-2563EB?style=flat-square&logo=globe&logoColor=white)](https://naimurrashid.dev/) [![GitHub](https://img.shields.io/badge/GitHub-naimurhamim-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/naimurhamim) | |
 
 <br/>
-
-*Built with ❤️ for Smarter Education Campuses*
 
 ⭐ **If you found this project helpful, please give it a star!** ⭐
 
